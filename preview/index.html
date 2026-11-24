@@ -7340,11 +7340,44 @@ window.Village = (function () {
     [trunk,pineTrunk].concat(branchSets,foliage,pineLayers).forEach(function(m){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;m.frustumCulled=false;g.add(m);});
     return g;
   }
+  // Подъезды визуально соединяют дворы с существующими дорогами. Они не часть графа навигации.
+  function districtDriveways(homes,gardens,facilities,grove){
+    var paths=[],verts=[],uv=[],indices=[];
+    function lineDistance(x,z,a,b){var dx=b.x-a.x,dz=b.z-a.z,l=dx*dx+dz*dz,t=l?Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/l)):0;return Math.hypot(x-a.x-t*dx,z-a.z-t*dz);}
+    function segmentClear(a,b,home){
+      var dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz),n=Math.max(1,Math.ceil(len/.7)),nx=-dz/(len||1),nz=dx/(len||1);
+      for(var i=0;i<=n;i++){var x=a.x+dx*i/n,z=a.z+dz*i/n;
+        for(var side=-1;side<=1;side++){var xx=x+nx*side*1.25,zz=z+nz*side*1.25;
+          if(Math.abs(xx)>575||Math.abs(zz)>575||waterAt(xx,zz)||decorativeFieldAt(xx,zz))return false;
+          if(homes.some(function(h){return Math.abs(xx-h.x)<3.65&&Math.abs(zz-h.z)<2.9;}))return false;
+          if(gardens.some(function(p){return Math.abs(xx-p.x)<3.4&&Math.abs(zz-p.z)<2.4;}))return false;
+          if(facilities.some(function(p){return Math.hypot(xx-p.x,zz-p.z)<p.r;}))return false;
+          if(grove.some(function(p){return Math.hypot(xx-p.x,zz-p.z)<2.2;}))return false;
+        }
+      }return true;
+    }
+    homes.forEach(function(home){
+      var front={x:home.x,z:home.z+(home.heading===Math.PI?-3.6:3.6)}, candidates=[];
+      countryRoutes.forEach(function(route,id){for(var i=1;i<route.length;i++){
+        var a=route[i-1],b=route[i],dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz,t=l?Math.max(0,Math.min(1,((front.x-a[0])*dx+(front.z-a[1])*dz)/l)):0;
+        var q={x:a[0]+dx*t,z:a[1]+dz*t,route:id},dist=Math.hypot(front.x-q.x,front.z-q.z);if(dist>5&&dist<85)candidates.push({q:q,dist:dist});
+      }});candidates.sort(function(a,b){return a.dist-b.dist;});
+      for(var c=0;c<candidates.length;c++){var q=candidates[c].q;if(!segmentClear(front,q,home))continue;
+        var dx=q.x-front.x,dz=q.z-front.z,len=Math.hypot(dx,dz),steps=Math.max(1,Math.ceil(len/2)),nx=-dz/len,nz=dx/len,base=verts.length/3;
+        for(var j=0;j<=steps;j++){var t=j/steps,x=front.x+dx*t,z=front.z+dz*t;for(var side=-1;side<=1;side+=2){var px=x+side*nx*1.25,pz=z+side*nz*1.25;verts.push(px,surfaceHeightAt(px,pz)+.045,pz);uv.push(side<0?0:1,len*t/4);}if(j<steps){var v=base+j*2;indices.push(v,v+2,v+1,v+1,v+2,v+3);}}
+        paths.push({a:front,b:q,home:{x:home.x,z:home.z},length:len});break;
+      }
+    });
+    var group=new THREE.Group();group.name='district-house-driveways';group.userData.paths=paths;
+    if(indices.length){var geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geometry.setIndex(indices);geometry.computeVertexNormals();var mesh=new THREE.Mesh(geometry,new THREE.MeshLambertMaterial({map:districtTexture('farmGround'),color:0xd1cdc3,side:THREE.DoubleSide}));mesh.name='district-driveway-surface';mesh.receiveShadow=true;group.add(mesh);}
+    group.userData.lineDistance=lineDistance;return group;
+  }
   // Световозвращающие столбики на свободной обочине; реальные дороги и координаты не меняются.
-  function districtRoadsideFurniture(homes,gardens,facilities){
+  function districtRoadsideFurniture(homes,gardens,facilities,driveways){
     var markers=[],shrubs=[];
     function free(x,z,r){
       if(Math.abs(x)>574-r||Math.abs(z)>574-r||roadDistance(x,z)<5.4+r*.25)return false;
+      if(driveways&&driveways.userData.paths.some(function(p){return driveways.userData.lineDistance(x,z,p.a,p.b)<3+r;}))return false;
       if(homes.some(function(p){return Math.hypot(x-p.x,z-p.z)<13+r;})||gardens.some(function(p){return Math.hypot(x-p.x,z-p.z)<7+r;}))return false;
       if(facilities.some(function(p){return Math.hypot(x-p.x,z-p.z)<p.r+8+r;}))return false;
       if(Math.hypot(x-__farmLocation.x,z-__farmLocation.z)<45||Math.hypot(x-__shopLocation.x,z-__shopLocation.z)<50||Math.hypot(x-Terrain.earthSite.x,z-Terrain.earthSite.z)<20)return false;
@@ -7392,14 +7425,15 @@ window.Village = (function () {
       for(var i=0;i<7;i++){
         var baseX=v.x-48+i*16,baseZ=v.z+(i%2?14:-14),found=null;
         for(var radius=0;radius<=48&&!found;radius+=4){var steps=radius?Math.ceil(2*Math.PI*radius/4):1;for(var k=0;k<steps;k++){var theta=2*Math.PI*k/steps,x=baseX+Math.cos(theta)*radius,z=baseZ+Math.sin(theta)*radius;if(Math.hypot(x-v.x,z-v.z)>72)continue;if(buildingClear(x,z,4,3)){found={x:x,z:z};break;}}}
-        if(found){placedHomes.push(found);var home=makeHouse(found.x,found.z,i%2?Math.PI:0,{variant:(i+n)%3,roof:i%2?0x49606b:0x674b3b,w:6.5,d:5});home.userData.district=v.name;scene.add(home);}
+        if(found){found.heading=i%2?Math.PI:0;placedHomes.push(found);var home=makeHouse(found.x,found.z,i%2?Math.PI:0,{variant:(i+n)%3,roof:i%2?0x49606b:0x674b3b,w:6.5,d:5});home.userData.district=v.name;scene.add(home);}
       }
       scene.add(makeLamp(v.x-20,v.z-5));scene.add(makeLamp(v.x+24,v.z+5));scene.add(makeWell(v.x,v.z+23));scene.add(districtShelter(v.x+52,v.z+19,v.name));
     });
     // Краевые деревья, как и внутренние лесополосы, не должны расти на дороге или поле.
     // Огороды размещаются после домов, чтобы последующие дома не накрывали грядки.
     var gardens=[];placedHomes.forEach(function(home,i){if(i%2)return;var offsets=[[0,10],[0,-10],[11,0],[-11,0],[0,13],[0,-13]];for(var j=0;j<offsets.length;j++){var x=home.x+offsets[j][0],z=home.z+offsets[j][1];if(buildingClear(x,z,4,3,home)&&!gardens.some(function(p){return Math.hypot(x-p.x,z-p.z)<10;})){scene.add(vegetableGarden(x,z));gardens.push({x:x,z:z});break;}}});
-    scene.add(districtRoadsideFurniture(placedHomes,gardens,occupied));
+    var driveways=districtDriveways(placedHomes,gardens,occupied,grove);scene.add(driveways);
+    scene.add(districtRoadsideFurniture(placedHomes,gardens,occupied,driveways));
     var trees=[];for(var i=0;i<180;i++){
       var a=(i*2.399963),r=525+(i%4)*13,x=Math.cos(a)*r,z=Math.sin(a)*r;
       if(Math.abs(x)>580||Math.abs(z)>580||roadDistance(x,z)<9||waterAt(x,z)||villages.some(function(v){return Math.hypot(x-v.x,z-v.z)<68;}))continue;
