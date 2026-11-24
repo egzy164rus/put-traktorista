@@ -1,5 +1,5 @@
 /* Версионированный автономный кэш; сохранения пользователя не трогаем. */
-const CACHE = 'put-traktorista-pwa-v5';
+const CACHE = 'put-traktorista-pwa-v6';
 const ASSETS = ['./manifest.webmanifest', './icon/icon-192.png', './icon/icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
@@ -26,6 +26,8 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET') return;
   const url = new URL(request.url), root = new URL(self.registration.scope);
   if (url.origin !== root.origin || !url.pathname.startsWith(root.pathname)) return;
+  // Отдельный черновик никогда не записывается в офлайн-кэш основной игры.
+  if (url.pathname.startsWith(new URL('preview/', root).pathname)) return;
   if (request.mode === 'navigate') {
     event.respondWith((async () => {
       try {
