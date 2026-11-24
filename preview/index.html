@@ -7361,12 +7361,35 @@ window.Village = (function () {
       countryRoutes.forEach(function(route,id){for(var i=1;i<route.length;i++){
         var a=route[i-1],b=route[i],dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz,t=l?Math.max(0,Math.min(1,((front.x-a[0])*dx+(front.z-a[1])*dz)/l)):0;
         var q={x:a[0]+dx*t,z:a[1]+dz*t,route:id},dist=Math.hypot(front.x-q.x,front.z-q.z);if(dist>5&&dist<85)candidates.push({q:q,dist:dist});
-      }});candidates.sort(function(a,b){return a.dist-b.dist;});
-      for(var c=0;c<candidates.length;c++){var q=candidates[c].q;if(!segmentClear(front,q,home))continue;
-        var dx=q.x-front.x,dz=q.z-front.z,len=Math.hypot(dx,dz),steps=Math.max(1,Math.ceil(len/2)),nx=-dz/len,nz=dx/len,base=verts.length/3;
-        for(var j=0;j<=steps;j++){var t=j/steps,x=front.x+dx*t,z=front.z+dz*t;for(var side=-1;side<=1;side+=2){var px=x+side*nx*1.25,pz=z+side*nz*1.25;verts.push(px,surfaceHeightAt(px,pz)+.045,pz);uv.push(side<0?0:1,len*t/4);}if(j<steps){var v=base+j*2;indices.push(v,v+2,v+1,v+1,v+2,v+3);}}
-        paths.push({a:front,b:q,home:{x:home.x,z:home.z},length:len});break;
+      }});
+      // Если прямой выезд на тракт затруднён, разрешаем примкнуть к уже проверенному соседнему подъезду.
+      paths.forEach(function(path,idx){for(var j=1;j<path.points.length;j++){var a=path.points[j-1],b=path.points[j],dx=b.x-a.x,dz=b.z-a.z,l=dx*dx+dz*dz,t=l?Math.max(0,Math.min(1,((front.x-a.x)*dx+(front.z-a.z)*dz)/l)):0,q={x:a.x+t*dx,z:a.z+t*dz,joined:idx},dist=Math.hypot(front.x-q.x,front.z-q.z);if(dist>4&&dist<85)candidates.push({q:q,dist:dist});}});
+      candidates.sort(function(a,b){return a.dist-b.dist;});
+      var chosen=null;
+      // Прямой участок предпочитаем: меньше поворотов и шире обзор.
+      for(var c=0;c<candidates.length;c++){var q=candidates[c].q;if(segmentClear(front,q,home)){chosen=[front,q];break;}}
+      // Если прямая линия пересекает дом, огород или поле — пробуем объезд с поворотами.
+      if(!chosen){
+        var forward=home.heading===Math.PI?-1:1,p1={x:front.x,z:front.z+forward*4.5};
+        if(segmentClear(front,p1,home)){
+          for(var c=0;c<Math.min(candidates.length,12)&&!chosen;c++){
+            var q=candidates[c].q;if(segmentClear(p1,q,home)){chosen=[front,p1,q];break;}
+            for(var offset of [-12,-8,-5,5,8,12]){var turn={x:p1.x+offset,z:p1.z};
+              if(segmentClear(p1,turn,home)&&segmentClear(turn,q,home)){chosen=[front,p1,turn,q];break;}
+            }
+          }
+        }
       }
+      if(!chosen)return;
+      var pathLength=0;
+      for(var part=1;part<chosen.length;part++){
+        var start=chosen[part-1],end=chosen[part],dx=end.x-start.x,dz=end.z-start.z,len=Math.hypot(dx,dz);if(len<.01)continue;
+        var steps=Math.max(1,Math.ceil(len/2)),nx=-dz/len,nz=dx/len,base=verts.length/3;
+        for(var j=0;j<=steps;j++){var t=j/steps,x=start.x+dx*t,z=start.z+dz*t;for(var side=-1;side<=1;side+=2){var px=x+side*nx*1.25,pz=z+side*nz*1.25;verts.push(px,surfaceHeightAt(px,pz)+.045,pz);uv.push(side<0?0:1,(pathLength+len*t)/4);}if(j<steps){var v=base+j*2;indices.push(v,v+2,v+1,v+1,v+2,v+3);}}
+        pathLength+=len;
+      }
+      paths.push({a:front,b:chosen[chosen.length-1],points:chosen,home:{x:home.x,z:home.z},length:pathLength});
+
     });
     var group=new THREE.Group();group.name='district-house-driveways';group.userData.paths=paths;
     if(indices.length){var geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geometry.setIndex(indices);geometry.computeVertexNormals();var mesh=new THREE.Mesh(geometry,new THREE.MeshLambertMaterial({map:districtTexture('farmGround'),color:0xd1cdc3,side:THREE.DoubleSide}));mesh.name='district-driveway-surface';mesh.receiveShadow=true;group.add(mesh);}
@@ -7377,7 +7400,7 @@ window.Village = (function () {
     var markers=[],shrubs=[];
     function free(x,z,r){
       if(Math.abs(x)>574-r||Math.abs(z)>574-r||roadDistance(x,z)<5.4+r*.25)return false;
-      if(driveways&&driveways.userData.paths.some(function(p){return driveways.userData.lineDistance(x,z,p.a,p.b)<3+r;}))return false;
+      if(driveways&&driveways.userData.paths.some(function(p){return p.points.some(function(q,i){return i>0&&driveways.userData.lineDistance(x,z,p.points[i-1],q)<3+r;});}))return false;
       if(homes.some(function(p){return Math.hypot(x-p.x,z-p.z)<13+r;})||gardens.some(function(p){return Math.hypot(x-p.x,z-p.z)<7+r;}))return false;
       if(facilities.some(function(p){return Math.hypot(x-p.x,z-p.z)<p.r+8+r;}))return false;
       if(Math.hypot(x-__farmLocation.x,z-__farmLocation.z)<45||Math.hypot(x-__shopLocation.x,z-__shopLocation.z)<50||Math.hypot(x-Terrain.earthSite.x,z-Terrain.earthSite.z)<20)return false;
@@ -7431,7 +7454,7 @@ window.Village = (function () {
     });
     // Краевые деревья, как и внутренние лесополосы, не должны расти на дороге или поле.
     // Огороды размещаются после домов, чтобы последующие дома не накрывали грядки.
-    var gardens=[];placedHomes.forEach(function(home,i){if(i%2)return;var offsets=[[0,10],[0,-10],[11,0],[-11,0],[0,13],[0,-13]];for(var j=0;j<offsets.length;j++){var x=home.x+offsets[j][0],z=home.z+offsets[j][1];if(buildingClear(x,z,4,3,home)&&!gardens.some(function(p){return Math.hypot(x-p.x,z-p.z)<10;})){scene.add(vegetableGarden(x,z));gardens.push({x:x,z:z});break;}}});
+    var gardens=[];placedHomes.forEach(function(home,i){if(i%2)return;var offsets=[[11,0],[-11,0],[0,home.heading===Math.PI?10:-10],[0,home.heading===Math.PI?13:-13],[15,0],[-15,0],[13,home.heading===Math.PI?6:-6],[-13,home.heading===Math.PI?6:-6]];for(var j=0;j<offsets.length;j++){var x=home.x+offsets[j][0],z=home.z+offsets[j][1];if(buildingClear(x,z,4,3,home)&&!gardens.some(function(p){return Math.hypot(x-p.x,z-p.z)<10;})){scene.add(vegetableGarden(x,z));gardens.push({x:x,z:z});break;}}});
     var driveways=districtDriveways(placedHomes,gardens,occupied,grove);scene.add(driveways);
     scene.add(districtRoadsideFurniture(placedHomes,gardens,occupied,driveways));
     var trees=[];for(var i=0;i<180;i++){
@@ -10634,6 +10657,7 @@ window.addEventListener('keydown',function(e){
   if(window.__mapId!=='malinovka'){q.strokeStyle='#758c94';q.lineWidth=11;q.lineCap='round';q.beginPath();for(var x=-window.__mapHalf;x<=window.__mapHalf;x+=4){var z=-46+Math.sin(x*.011)*7;if(x===-window.__mapHalf)q.moveTo(X(x),Z(z));else q.lineTo(X(x),Z(z));}q.stroke();q.strokeStyle='#a6c4c3';q.lineWidth=7;q.stroke();}
   if(__career.data.apiary){q.save();q.strokeStyle='#d29c2e';q.fillStyle='rgba(224,179,57,.10)';q.lineWidth=2;q.setLineDash([5,4]);q.beginPath();q.arc(X(window.__farmLocation.x+30),Z(window.__farmLocation.z+25),65*mapScale,0,Math.PI*2);q.fill();q.stroke();q.restore();}
   function road(route,width,color){q.strokeStyle=color;q.lineWidth=width;q.lineCap='round';q.lineJoin='round';q.beginPath();route.forEach(function(p,i){if(i===0)q.moveTo(X(p[0]),Z(p[1]));else q.lineTo(X(p[0]),Z(p[1]));});q.stroke();}
+  if(window.__mapId==='malinovka'){var drives=__world.scene.getObjectByName('district-house-driveways');if(drives){q.strokeStyle='#8b7a5e';q.lineWidth=2.5;q.lineCap='round';q.lineJoin='round';drives.userData.paths.forEach(function(path){q.beginPath();path.points.forEach(function(p,i){if(i===0)q.moveTo(X(p.x),Z(p.z));else q.lineTo(X(p.x),Z(p.z));});q.stroke();});}}
   village.routes.forEach(function(route,id){var main=id===0||id===1||id===3;road(route,main?9:7,'#6d695a');road(route,main?6:4,main?'#b4b0a0':'#d1bd93');});
   function label(x,z,title,kind,ox,oy){var px=X(x),pz=Z(z);q.fillStyle=kind||'#47604c';q.fillRect(px-4,pz-4,8,8);q.strokeStyle='#f6f1dd';q.lineWidth=3;q.font='bold 12px system-ui';q.strokeText(title,px+(ox||7),pz+(oy||-6));q.fillStyle='#243a2e';q.fillText(title,px+(ox||7),pz+(oy||-6));}
   if(window.__mapId==='malinovka'){label(-485,95,'МАЛИНОВКА');label(440,-180,'НОВОЕ');label(-380,320,'СОСНОВКА');label(345,295,'ЛУГОВОЕ');label(-380,70,'Зерноочистка');label(405,330,'Зернопункт');}else if(window.__mapId==='zarechye'){label(-450,330,'СОСНОВКА');label(300,-330,'ЛУГОВОЕ');label(405,330,'Зернопункт','#755e43');}if(window.__mapId!=='malinovka')label(-78,15,'БЕРЁЗОВКА','#354b40',-39,-17);label(__gasLocation.x,__gasLocation.z,'АЗС');label(window.__shopLocation.x,window.__shopLocation.z,'Магазин','#755e43',-45,18);label(__garageLocation.x,__garageLocation.z,'МТС');label(window.__farmLocation.x,window.__farmLocation.z,'Ферма','#486847',8,15);if(__career.data.coop||__career.data.cowshed||__career.data.sheepfold)label(window.__farmLocation.x,window.__farmLocation.z+25,'Загоны');if(__career.data.greenhouse)label(window.__mapId==='malinovka'?42:32,window.__farmLocation.z+25,'Теплица','#789053',-37,17);if(__career.data.apiary)label(window.__farmLocation.x+30,window.__farmLocation.z+25,'Пасека','#ad7c25');label(window.__fieldLocation.x,window.__fieldLocation.z,'КОЛОС','#735033',-20,-10);label(Terrain.earthSite.x,Terrain.earthSite.z,'Грунт','#735033');label(__elevatorLocation.x,__elevatorLocation.z,'Элеватор','#755e43');label(__sawmillLocation.x,__sawmillLocation.z,'Лесопилка');if(window.__mapId!=='malinovka')label(9.5,-46,'Мост','#536e72',8,15);
