@@ -6473,7 +6473,7 @@ window.Village = (function () {
     opt = opt || {};
     if (!plankMats) {
       plankMats = ['#7d5f3a', '#6e5533', '#836845'].map(function (base,i) {
-        if(window.__mapId==='malinovka')return new THREE.MeshLambertMaterial({map:districtTexture('wood'),color:[0xffffff,0xd6d4ce,0xe4dad0][i]});
+        if(window.__mapId==='malinovka')return new THREE.MeshLambertMaterial({map:districtTexture(i===2?'brick':'wood'),color:[0xe9e0cf,0xb9c4b8,0xe4ddd3][i]});
         var t = Utils.toTexture(Utils.plankTexture(base), [2, 1]);
         return new THREE.MeshLambertMaterial({ map: t });
       });
@@ -6525,6 +6525,13 @@ window.Village = (function () {
     var canopy=new THREE.Mesh(new THREE.BoxGeometry(1.55,.12,.9),std('#69746a',{roughness:1}));canopy.position.set(0,2.43,d/2+.48);canopy.rotation.x=-.12;g.add(canopy);
     var step=new THREE.Mesh(new THREE.BoxGeometry(1.4,.18,.65),std('#8b8171',{roughness:1}));step.position.set(0,.15,d/2+.42);g.add(step);
     var fascia=new THREE.Mesh(new THREE.BoxGeometry(w+.45,.14,.1),edgeMat);fascia.position.set(0,.55+h,d/2+.37);g.add(fascia);
+    if(window.__mapId==='malinovka'){
+      // Простые, но объёмные детали фасада; все находятся в границах дома.
+      var sill=std('#d6d0bb',{roughness:1}), gutter=std('#4c5651',{roughness:.9});
+      [-1,1].forEach(function(side){var ledge=new THREE.Mesh(new THREE.BoxGeometry(1.12,.08,.18),sill);ledge.position.set(side*w*.27,wy-.54,d/2+.11);g.add(ledge);
+        var drain=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,h+.4,6),gutter);drain.position.set(side*(w/2-.04),.6+h/2,d/2+.12);g.add(drain);});
+      var roofEdge=new THREE.Mesh(new THREE.BoxGeometry(.11,.11,d+.82),gutter);roofEdge.position.set(0,.55+h+roofH+.03,0);g.add(roofEdge);
+    }
     g.position.set(x, H(x, z), z);
     g.rotation.y = rotY || 0;
     return g;
@@ -7188,10 +7195,17 @@ window.Village = (function () {
   function dealerLot(){var g=new THREE.Group(),sx=window.__shopLocation.x,sz=window.__shopLocation.z;g.name='dealership-complex';g.add(yardSurface(sx,sz-8,64,42,'dealership-paved-yard'));g.add(cityDealership());var paint=new THREE.MeshLambertMaterial({color:0xe4e3c4});for(var i=0;i<5;i++){var xx=sx-28+i*6,zz=sz+6;var stripe=box(g,.09,.04,5,xx,H(xx,zz)+.17,zz,paint);stripe.name='dealership-parking-line';}g.add(roadsideSign(sx+21,sz-13,'АГРОЦЕНТР','ПРОДАЖА И ВЫДАЧА',Math.PI/2));return g;}
   function vegetableGarden(x,z){
     var g=new THREE.Group();g.name='village-vegetable-garden';g.position.set(x,H(x,z)+.14,z);
-    var dirt=new THREE.Mesh(new THREE.PlaneGeometry(6,4),new THREE.MeshLambertMaterial({color:0x594735,side:THREE.DoubleSide}));dirt.rotation.x=-Math.PI/2;g.add(dirt);
-    var plantGeo=new THREE.ConeGeometry(.11,.30,5),plantMat=new THREE.MeshLambertMaterial({color:0x597c3d});
-    var plants=new THREE.InstancedMesh(plantGeo,plantMat,48),o=new THREE.Object3D(),n=0;
-    for(var a=0;a<6;a++)for(var b=0;b<8;b++){o.position.set(-2.5+a, .14,-1.7+b*.48);o.updateMatrix();plants.setMatrixAt(n++,o.matrix);}plants.instanceMatrix.needsUpdate=true;plants.name='garden-plant-rows';g.add(plants);return g;
+    var soilGeo=new THREE.PlaneGeometry(6,4);
+    if(window.__mapId==='malinovka'){var uv=soilGeo.attributes.uv;for(var i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*2,uv.getY(i)*1.3);}
+    var soilMat=window.__mapId==='malinovka'?new THREE.MeshLambertMaterial({map:districtTexture('soil'),side:THREE.DoubleSide,color:0xc6b7a2}):new THREE.MeshLambertMaterial({color:0x594735,side:THREE.DoubleSide});
+    var dirt=new THREE.Mesh(soilGeo,soilMat);dirt.rotation.x=-Math.PI/2;g.add(dirt);
+    var isNew=window.__mapId==='malinovka',plantGeo=isNew?new THREE.PlaneGeometry(.55,.52):new THREE.ConeGeometry(.11,.30,5);
+    if(isNew)plantGeo.translate(0,.24,0);
+    var plantMat=isNew?new THREE.MeshLambertMaterial({map:districtTexture('broadCards'),alphaTest:.32,side:THREE.DoubleSide,color:0xb0c99c}):new THREE.MeshLambertMaterial({color:0x597c3d});
+    var plants=new THREE.InstancedMesh(plantGeo,plantMat,isNew?96:48),o=new THREE.Object3D(),n=0;
+    for(var a=0;a<6;a++)for(var b=0;b<8;b++){for(var c=0;c<(isNew?2:1);c++){
+      o.position.set(-2.5+a,isNew?.025:.14,-1.7+b*.48);o.rotation.set(0,(a*1.7+b*.8)+c*Math.PI/2,0);o.scale.set(1,1,1);o.updateMatrix();plants.setMatrixAt(n++,o.matrix);
+    }}plants.instanceMatrix.needsUpdate=true;plants.name='garden-plant-rows';g.add(plants);return g;
   }
   function forestBelts(){
     var positions=[];function addLine(x1,z1,x2,z2,n){for(var i=0;i<n;i++){var t=i/(n-1),j=Math.sin(i*12.9)*1.8;positions.push([x1+(x2-x1)*t+j,z1+(z2-z1)*t+Math.cos(i*7.8)*1.3]);}}
@@ -7326,6 +7340,34 @@ window.Village = (function () {
     [trunk,pineTrunk].concat(branchSets,foliage,pineLayers).forEach(function(m){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;m.frustumCulled=false;g.add(m);});
     return g;
   }
+  // Световозвращающие столбики на свободной обочине; реальные дороги и координаты не меняются.
+  function districtRoadsideFurniture(homes,gardens,facilities){
+    var markers=[],shrubs=[];
+    function free(x,z,r){
+      if(Math.abs(x)>574-r||Math.abs(z)>574-r||roadDistance(x,z)<5.4+r*.25)return false;
+      if(homes.some(function(p){return Math.hypot(x-p.x,z-p.z)<13+r;})||gardens.some(function(p){return Math.hypot(x-p.x,z-p.z)<7+r;}))return false;
+      if(facilities.some(function(p){return Math.hypot(x-p.x,z-p.z)<p.r+8+r;}))return false;
+      if(Math.hypot(x-__farmLocation.x,z-__farmLocation.z)<45||Math.hypot(x-__shopLocation.x,z-__shopLocation.z)<50||Math.hypot(x-Terrain.earthSite.x,z-Terrain.earthSite.z)<20)return false;
+      for(var dx=-r;dx<=r;dx+=Math.max(r,.3))for(var dz=-r;dz<=r;dz+=Math.max(r,.3))if(waterAt(x+dx,z+dz)||decorativeFieldAt(x+dx,z+dz))return false;
+      return true;
+    }
+    [0,1,3].forEach(function(routeId){var route=countryRoutes[routeId];if(!route)return;
+      for(var j=1;j<route.length;j++){var a=route[j-1],b=route[j],dx=b[0]-a[0],dz=b[1]-a[1],len=Math.hypot(dx,dz);if(len<1)continue;
+        for(var d=12;d<len-8;d+=36){for(var side=-1;side<=1;side+=2){var x=a[0]+dx*d/len+side*dz/len*6.2,z=a[1]+dz*d/len-side*dx/len*6.2;
+          if(free(x,z,.35)&&!markers.some(function(p){return Math.hypot(x-p.x,z-p.z)<12;})){markers.push({x:x,z:z});
+            var sx=x+side*dz/len*4,sz=z-side*dx/len*4;if(markers.length%3===0&&free(sx,sz,1.2))shrubs.push({x:sx,z:sz});}
+        }}
+      }
+    });
+    var group=new THREE.Group();group.name='district-roadside-details';group.userData.markers=markers;group.userData.shrubs=shrubs;
+    var stem=new THREE.InstancedMesh(new THREE.BoxGeometry(.14,.85,.12),new THREE.MeshLambertMaterial({color:0xd6d8cb}),markers.length);
+    var reflector=new THREE.InstancedMesh(new THREE.BoxGeometry(.16,.17,.14),new THREE.MeshLambertMaterial({color:0xac4b35}),markers.length);
+    stem.name='district-road-markers';reflector.name='district-road-reflectors';var o=new THREE.Object3D();
+    markers.forEach(function(p,i){o.position.set(p.x,H(p.x,p.z)+.42,p.z);o.rotation.set(0,i*.37,0);o.scale.set(1,1,1);o.updateMatrix();stem.setMatrixAt(i,o.matrix);o.position.y+=.21;o.updateMatrix();reflector.setMatrixAt(i,o.matrix);});
+    var bushes=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,1),new THREE.MeshLambertMaterial({color:0x617b4c,map:districtTexture('leaves')}),shrubs.length);bushes.name='district-roadside-shrubs';
+    shrubs.forEach(function(p,i){o.position.set(p.x,H(p.x,p.z)+.47,p.z);o.rotation.set(0,i*1.23,0);o.scale.set(.65+(i%3)*.12,.45+(i%2)*.1,.6+(i%4)*.09);o.updateMatrix();bushes.setMatrixAt(i,o.matrix);});
+    [stem,reflector,bushes].forEach(function(m){m.instanceMatrix.needsUpdate=true;m.frustumCulled=false;group.add(m);});return group;
+  }
   function buildMalinovsky(scene){
     // Основные действующие точки помещены на свои новые дворы. Часть координат пока общая с игровыми системами.
     scene.add(districtWater());scene.add(roadNetwork());scene.add(roadsidePower());scene.add(districtGroves());
@@ -7357,6 +7399,7 @@ window.Village = (function () {
     // Краевые деревья, как и внутренние лесополосы, не должны расти на дороге или поле.
     // Огороды размещаются после домов, чтобы последующие дома не накрывали грядки.
     var gardens=[];placedHomes.forEach(function(home,i){if(i%2)return;var offsets=[[0,10],[0,-10],[11,0],[-11,0],[0,13],[0,-13]];for(var j=0;j<offsets.length;j++){var x=home.x+offsets[j][0],z=home.z+offsets[j][1];if(buildingClear(x,z,4,3,home)&&!gardens.some(function(p){return Math.hypot(x-p.x,z-p.z)<10;})){scene.add(vegetableGarden(x,z));gardens.push({x:x,z:z});break;}}});
+    scene.add(districtRoadsideFurniture(placedHomes,gardens,occupied));
     var trees=[];for(var i=0;i<180;i++){
       var a=(i*2.399963),r=525+(i%4)*13,x=Math.cos(a)*r,z=Math.sin(a)*r;
       if(Math.abs(x)>580||Math.abs(z)>580||roadDistance(x,z)<9||waterAt(x,z)||villages.some(function(v){return Math.hypot(x-v.x,z-v.z)<68;}))continue;
