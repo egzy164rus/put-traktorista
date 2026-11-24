@@ -744,6 +744,16 @@ html {-webkit-text-size-adjust:100%;text-size-adjust:100%}
  .preset-card{min-height:36px;padding:4px 7px}.preset-label{margin-bottom:3px}.preset-detail h3{font-size:16px}.preset-metrics{margin-top:3px}.preset-metrics div{padding:2px 0}.preset-equipment{margin-top:4px}
  .setup-actions{padding-top:4px;margin-top:4px}.setup-actions button{min-height:30px;padding:5px 12px}
 }
+/* Свободные кнопки HUD: не перекрывают карту и подсказку. */
+@media (pointer:coarse) and (orientation:landscape){#career-open{left:max(158px,calc(env(safe-area-inset-left) + 158px));top:52px}#map-toggle{max-width:140px;white-space:nowrap}#tool-info{top:93px;max-width:47vw;white-space:normal;line-height:1.3}}
+.setup-map-card {min-height:180px;background-position:center 55%;border-color:#b0c39155}.setup-map-caption{margin:11px 0!important;color:#a8c09f!important;font-size:12px!important}
+@media(max-height:500px){.setup-map-card{min-height:105px}.setup-map-caption{margin:7px 0!important}}
+#coupling-notice {position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:70;max-width:min(540px,72vw);padding:9px 13px;border-radius:6px;background:#162b22ed;border:1px solid #c2d99a88;color:#f3f8e8;font:600 12px/1.35 system-ui;text-align:center;box-shadow:0 5px 20px #0005;pointer-events:none}
+#coupling-notice[hidden]{display:none!important}
+@media(max-height:500px){#coupling-notice{bottom:12px;font-size:11px;padding:6px 10px}}
+.setup-options-title {margin:14px 0 7px;font-size:10px;letter-spacing:.14em;font-weight:750;color:#a9c491}.setup-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.setup-options .setup-check{display:flex;align-items:center;gap:8px;width:auto;box-sizing:border-box;margin:0;padding:8px 10px;border:1px solid #ffffff17;border-radius:4px;background:#ffffff08;font-size:12px}.setup-options .setup-check:has(input:checked){border-color:#b9d67a78;background:#a2c56d1c}.setup-extra{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:12px}
+@media(max-height:500px){.setup-options-title{margin:8px 0 5px}.setup-options{gap:3px}.setup-options .setup-check{padding:5px 8px}.setup-extra{margin-top:8px}}
+@media(max-width:550px) and (orientation:portrait){.setup-options,.setup-extra{grid-template-columns:1fr}}
 
 </style>
 </head>
@@ -890,7 +900,7 @@ html {-webkit-text-size-adjust:100%;text-size-adjust:100%}
       <button class="tbtn" id="tbtn-lights">💡</button>
       <button class="tbtn" id="tbtn-beacon">🚨</button>
       <button class="tbtn" id="tbtn-hitch" title="Поднять или опустить навеску">🔧</button>
-      <button class="tbtn" id="tbtn-tool" title="Сменить орудие">I</button>
+      <button class="tbtn" id="tbtn-tool" title="Сцепить или отцепить орудие" aria-label="Сцепить или отцепить орудие">⇄</button>
       <button class="tbtn" id="tbtn-dig" title="Набрать грунт" style="display:none">⛏</button>
       <button class="tbtn" id="tbtn-dump" title="Выгрузить грунт" style="display:none">⬇</button>
       <button class="tbtn" id="tbtn-backhoe" title="Задняя стрела JCB" style="display:none">B</button>
@@ -1012,7 +1022,7 @@ html {-webkit-text-size-adjust:100%;text-size-adjust:100%}
           </div>
         </div>
         <div id="setup-page-2" class="setup-page" hidden>
-          <div class="setup-map-card"><div><span>ДОСТУПНАЯ КАРТА / 01</span><strong>Берёзовка</strong><small>Российская деревня · ферма · река · 18 полей</small></div><em>Иллюстрация · графика игры отличается</em></div><label class="setup-map-choice">Карта<select id="setup-map"><option value="berezovka">Берёзовка — российская деревня</option></select></label><p class="setup-note">Оригинальная карта. Другие карты пока не добавлены.</p>
+          <div class="setup-map-card"><div><span>ДОСТУПНАЯ КАРТА / 01</span><strong>Берёзовка</strong><small>Российская деревня · ферма · река · 18 полей</small></div><em>Иллюстрация · графика игры отличается</em></div><p class="setup-map-caption">Единственная доступная карта · другие карты пока не добавлены</p>
         </div>
         <div id="setup-page-3" class="setup-page" hidden>
           <div class="setup-scroll-hint">↕ Прокрутите настройки, чтобы увидеть все параметры</div>
@@ -1021,15 +1031,15 @@ html {-webkit-text-size-adjust:100%;text-size-adjust:100%}
             <label>Дней в месяце<select id="setup-days"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option><option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option><option>25</option><option>26</option><option>27</option><option>28</option></select></label>
             <label>Графика<select id="menu-quality"><option value="auto">Автоматически</option><option value="high">Высокая</option><option value="low">Экономная</option></select></label>
           </div>
-          <label class="setup-check"><input type="checkbox" id="setup-seasonal"> Сезонные окна посева</label>
+          <div class="setup-options-title">ПРАВИЛА ХОЗЯЙСТВА</div><div class="setup-options"><label class="setup-check"><input type="checkbox" id="setup-seasonal"> Сезонные окна посева</label>
           <label class="setup-check"><input type="checkbox" id="setup-weeds"> Сорняки и штраф урожая</label>
           <label class="setup-check"><input type="checkbox" id="setup-lime"> Кислотность и известкование</label>
           <label class="setup-check"><input type="checkbox" id="setup-plowing"> Периодическая вспашка</label>
           <label class="setup-check"><input type="checkbox" id="setup-weather"> Запрет уборки при осадках</label>
           <label class="setup-check"><input type="checkbox" id="setup-crop-damage"> Повреждение посевов колёсами</label>
-          <label>Автосохранение<select id="setup-autosave"><option value="3">Каждые 3 с</option><option value="15">Каждые 15 с</option><option value="60">Каждые 60 с</option><option value="0">Без периодического</option></select></label>
+          </div><div class="setup-grid setup-extra"><label>Автосохранение<select id="setup-autosave"><option value="3">Каждые 3 с</option><option value="15">Каждые 15 с</option><option value="60">Каждые 60 с</option><option value="0">Без периодического</option></select></label>
           <label>Расход топлива<select id="setup-fuel"><option value="low">Низкий ×0,5</option><option value="normal" selected>Обычный ×1</option><option value="high">Высокий ×2</option></select></label>
-          <p class="setup-note">Накопление снега, трафик и камни пока не моделируются. Настройки можно изменить в игре.</p>
+          </div><p class="setup-note">Накопление снега, трафик и камни пока не моделируются. Настройки можно изменить в игре.</p>
         </div>
         <div class="setup-actions"><button type="button" id="setup-back">← Назад</button><button type="button" id="setup-next">Далее →</button></div>
         <div id="setup-message" role="status"></div>
@@ -6908,6 +6918,11 @@ window.Village = (function () {
   // Непрерывное полотно дорог: асфальтовый тракт и грунтовые подъезды.
   // Маршруты общие с картой, координаты полей и объектов не меняются.
   function roadDistance(x,z){var min=Infinity;countryRoutes.forEach(function(r){for(var i=1;i<r.length;i++){var a=r[i-1],b=r[i],dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz,t=l?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/l)):0;min=Math.min(min,Math.hypot(x-a[0]-t*dx,z-a[1]-t*dz));}});return min;}
+  // Высота полотна для колёс: плавный переход по краям дороги и обочины.
+  function surfaceHeightAt(x,z){var best=0;countryRoutes.forEach(function(r,id){var paved=id===0||id===1||id===3,half=paved?3.25:2.9,shoulder=paved?4.3:3.65;
+    for(var i=1;i<r.length;i++){var a=r[i-1],b=r[i],dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz,t=l?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/l)):0,d=Math.hypot(x-a[0]-t*dx,z-a[1]-t*dz);if(d>shoulder+.3)continue;
+      var top=(paved?.32:.28)+id*.001,edge=.20+id*.001,value=d<half-.15?top:d<half+.15?top+(edge-top)*(d-(half-.15))/.3:d<shoulder-.3?edge:edge*Math.max(0,(shoulder+.3-d)/.6);best=Math.max(best,value);
+    }});return Terrain.heightAt(x,z)+best;}
   function roadNetwork(){
     function texture(kind){var c=document.createElement('canvas');c.width=256;c.height=256;var q=c.getContext('2d'),seed=kind==='asphalt'?94821:23719;
       function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
@@ -7101,7 +7116,7 @@ window.Village = (function () {
     if (waterMat) { waterMat.envMapIntensity = 0.58 + Math.sin(time * 0.9) * 0.14; waterMat.roughness = 0.15 + Math.sin(time * 1.4) * 0.05; }
   }
 
-  return { build: build, mudAt: mudAt, roadDistance: roadDistance };
+  return { build: build, mudAt: mudAt, roadDistance: roadDistance, surfaceHeightAt:surfaceHeightAt };
 })();
 
 </script>
@@ -7791,6 +7806,7 @@ window.DayCycle = (function () {
   function setVehicle(id, silent) {
     var entry = VEHICLES.filter(function (v) { return v.id === id; })[0] || VEHICLES[0];
     if(window.__career&&!window.__career.vehicleAvailable(entry.id)){if(!silent)toast('Машина недоступна: купи или арендуй её в агромагазине.');return null;}
+    if(window.__farm&&window.__farm.detachForVehicleSwitch)window.__farm.detachForVehicleSwitch();
     if(window.__career)window.__career.beforeVehicleSwitch();
     if (tractor) scene.remove(tractor);
     mtz = entry.build();
@@ -7974,13 +7990,13 @@ window.DayCycle = (function () {
     GameInput.update(dt, Math.abs(S.speed) / maxFwd);
     var inp = GameInput.poll();
     if(window.__career)inp=window.__career.helperInput(inp,dt);
-    var hFront = Terrain.heightAt(S.pos.x + Math.sin(S.heading) * 1.22, S.pos.z + Math.cos(S.heading) * 1.22);
-    var hRear = Terrain.heightAt(S.pos.x - Math.sin(S.heading) * 1.15, S.pos.z - Math.cos(S.heading) * 1.15);
-    var hCenter = Terrain.heightAt(S.pos.x, S.pos.z);
-    var hRightF = Terrain.heightAt(S.pos.x + Math.cos(S.heading) * 0.62, S.pos.z - Math.sin(S.heading) * 0.62);
-    var hLeftF = Terrain.heightAt(S.pos.x - Math.cos(S.heading) * 0.62, S.pos.z + Math.sin(S.heading) * 0.62);
-    var hRightR = Terrain.heightAt(S.pos.x + Math.cos(S.heading) * 0.79, S.pos.z - Math.sin(S.heading) * 0.79);
-    var hLeftR = Terrain.heightAt(S.pos.x - Math.cos(S.heading) * 0.79, S.pos.z + Math.sin(S.heading) * 0.79);
+    var hFront = Village.surfaceHeightAt(S.pos.x + Math.sin(S.heading) * 1.22, S.pos.z + Math.cos(S.heading) * 1.22);
+    var hRear = Village.surfaceHeightAt(S.pos.x - Math.sin(S.heading) * 1.15, S.pos.z - Math.cos(S.heading) * 1.15);
+    var hCenter = Village.surfaceHeightAt(S.pos.x, S.pos.z);
+    var hRightF = Village.surfaceHeightAt(S.pos.x + Math.cos(S.heading) * 0.62, S.pos.z - Math.sin(S.heading) * 0.62);
+    var hLeftF = Village.surfaceHeightAt(S.pos.x - Math.cos(S.heading) * 0.62, S.pos.z + Math.sin(S.heading) * 0.62);
+    var hRightR = Village.surfaceHeightAt(S.pos.x + Math.cos(S.heading) * 0.79, S.pos.z - Math.sin(S.heading) * 0.79);
+    var hLeftR = Village.surfaceHeightAt(S.pos.x - Math.cos(S.heading) * 0.79, S.pos.z + Math.sin(S.heading) * 0.79);
 
     // Подвеска и тяга используют ту же высоту борозд, что и геометрия поля.
     var farm=window.__farm;
@@ -8438,7 +8454,7 @@ window.DayCycle = (function () {
   }
 
   /* ---------- Стартовая машина ---------- */
-  S.pos.set(0, Terrain.heightAt(0, 0), 0);
+  S.pos.set(0, Village.surfaceHeightAt(0, 0), 0);
   setVehicle(settings.vehicle && VEHICLES.some(function (v) { return v.id === settings.vehicle; }) ? settings.vehicle : 'mtz82', true);
   tractor.position.copy(S.pos);
 
@@ -8719,6 +8735,9 @@ window.addEventListener('keydown',function(e){
       data.tool = Number.isInteger(saved.tool) ? Math.max(0,Math.min(9,saved.tool)) : 0;
     }
   } catch (_) {}
+  // У каждого орудия сохраняется место, где его оставили. Старые сохранения сохраняют прицеплённый инструмент.
+  var defaultToolSpots=Array.from({length:9},function(_,i){return {x:20+i*4.5,z:-14,heading:0};});
+  data.implements=defaultToolSpots.map(function(pos,i){var old=saved&&Array.isArray(saved.implements)&&saved.implements[i];return old&&Number.isFinite(old.x)&&Number.isFinite(old.z)&&Number.isFinite(old.heading)&&Math.abs(old.x)<300&&Math.abs(old.z)<300?{x:old.x,z:old.z,heading:old.heading}:pos;});
   // Старые сохранения продолжают работать: новый прицеп и заказ добавляются отдельно.
   // Старые сохранения получают стартовый запас без потери поля и денег.
   data.seeds=saved&&Number.isFinite(saved.seeds)?Math.max(0,Math.floor(saved.seeds)):250;
@@ -8882,7 +8901,7 @@ window.addEventListener('keydown',function(e){
 
   var root=document.createElement('div');root.id='farm-panel';
   root.style.cssText='position:fixed;z-index:20;display:none;color:#fff;font:13px/1.4 system-ui,sans-serif';
-  root.innerHTML='<button id="farm-toggle" type="button" aria-expanded="false">☰ &nbsp;ФЕРМА <span>Показать действия</span></button><div id="farm-content" hidden><b>🌾 Поле «Колос»</b><div id="farm-status"></div><div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap"><button id="farm-tool" style="min-height:36px">Орудие: I</button><button id="farm-crop" style="min-height:36px">Культура</button><button id="farm-lift" style="min-height:36px">Опустить / поднять</button><button id="farm-sell" style="min-height:36px">Разгрузить / продать</button><button id="farm-fuel" style="min-height:36px">Заправка</button><button id="farm-seeds" style="min-height:36px">Купить семена</button><button id="farm-fertilizer" style="min-height:36px">Купить удобрение</button><button id="farm-lime" style="min-height:36px">Купить известь</button><button id="farm-service" style="min-height:36px">Сервис</button></div><details style="margin-top:5px"><summary>Прицеп и заказы</summary><div id="haul-status"></div><small>Грунт: JCB выгружает поднятым ковшом в пустой отцепленный прицеп. Выгрузка — задним бортом на площадке; продажа — у агромагазина, 200 ₽/м³.</small><div style="display:flex;gap:4px;flex-wrap:wrap"><button id="haul-hitch">Сцепить / отцепить</button><button id="haul-crop">Культура груза</button><button id="haul-load">Загрузить зерно</button><button id="haul-contract">Загрузить контракт</button><button id="haul-soil-dump">Выгрузить грунт</button><button id="haul-soil-sell">Продать грунт</button><button id="job-claim">Забрать награду</button></div></details><div id="farm-message" style="color:#f4d58d;margin-top:5px">Поле: у знака «Колос» за мостом.</div></div>';
+  root.innerHTML='<button id="farm-toggle" type="button" aria-expanded="false">☰ &nbsp;ФЕРМА <span>Показать действия</span></button><div id="farm-content" hidden><b>🌾 Поле «Колос»</b><div id="farm-status"></div><div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap"><button id="farm-tool" style="min-height:36px">Сцепить / отцепить: I</button><button id="farm-crop" style="min-height:36px">Культура</button><button id="farm-lift" style="min-height:36px">Опустить / поднять</button><button id="farm-sell" style="min-height:36px">Разгрузить / продать</button><button id="farm-fuel" style="min-height:36px">Заправка</button><button id="farm-seeds" style="min-height:36px">Купить семена</button><button id="farm-fertilizer" style="min-height:36px">Купить удобрение</button><button id="farm-lime" style="min-height:36px">Купить известь</button><button id="farm-service" style="min-height:36px">Сервис</button></div><details style="margin-top:5px"><summary>Прицеп и заказы</summary><div id="haul-status"></div><small>Грунт: JCB выгружает поднятым ковшом в пустой отцепленный прицеп. Выгрузка — задним бортом на площадке; продажа — у агромагазина, 200 ₽/м³.</small><div style="display:flex;gap:4px;flex-wrap:wrap"><button id="haul-hitch">Сцепить / отцепить</button><button id="haul-crop">Культура груза</button><button id="haul-load">Загрузить зерно</button><button id="haul-contract">Загрузить контракт</button><button id="haul-soil-dump">Выгрузить грунт</button><button id="haul-soil-sell">Продать грунт</button><button id="job-claim">Забрать награду</button></div></details><div id="farm-message" style="color:#f4d58d;margin-top:5px">Поле: у знака «Колос» за мостом.</div></div>';
   root.style.display='none';
   document.body.appendChild(root);
   var farmToggle=root.querySelector('#farm-toggle'),farmContent=root.querySelector('#farm-content');
@@ -8969,7 +8988,7 @@ window.addEventListener('keydown',function(e){
   function takeFertilizer(){if(fertilizerStock()<1)return false;if(data.career.fertilizerMode==='organic')data.career.manure--;else data.fertilizer--;return true;}
   function contractTool(kind){return ({plow:1,sow:2,harvest:3,fertilize:4,weed:5,lime:6,roll:7,cultivate:8,mulch:9})[kind]||1;}
   function say(t){message.textContent=t;}
-  function nextTool(){data.tool=(data.tool+1)%names.length;dirty=true;oldVehicle=null;lastMove=null;passHeading=null;say(names[data.tool]+(data.tool===1?' · ширина 2,8 м. ':' . ' )+'Опусти навеску и двигайся по полю.');}
+  function nextTool(){return toggleImplement();}
   root.querySelector('#farm-tool').onclick=nextTool;
   var cropButton=root.querySelector('#farm-crop');
   function updateCropButton(){cropButton.textContent='Посев: '+cropNames[data.cropChoice];}
@@ -9219,6 +9238,26 @@ window.addEventListener('keydown',function(e){
       for(var k=0;k<12;k++){var tooth=new THREE.Mesh(new THREE.BoxGeometry(.045,.14,.08),mulchSteel);tooth.position.set(0,-1.2+k*.22,.19);rotor.add(tooth);}
     }
   }
+  // Реальные объекты орудий в мире; привязка кинематическая, без физического решателя.
+  var parkedTools=[],fakeVehicle={id:'mtz82',geo:{rearY:.75,rearZ:-1.2},group:new THREE.Group()};
+  (function createParkedTools(){var selected=data.tool;for(var i=1;i<names.length;i++){
+    data.tool=i;rebuild(fakeVehicle);var g=model;fakeVehicle.group.remove(g);g.position.set(0,0,0);var root3d=new THREE.Group();root3d.name='parked-implement-'+i;root3d.add(g);window.__world.scene.add(root3d);parkedTools.push(root3d);model=null;
+   }data.tool=selected;oldVehicle=null;})();
+  function parkedPosition(i){var p=data.implements[i-1];return {x:p.x,z:p.z,heading:p.heading};}
+  function drawParked(){parkedTools.forEach(function(obj,index){var p=data.implements[index];obj.visible=data.tool!==index+1;obj.position.set(p.x,Village.surfaceHeightAt(p.x,p.z)+.6,p.z);obj.rotation.y=p.heading;});}
+  var couplingNotice=document.createElement('div'),noticeTimer;couplingNotice.id='coupling-notice';couplingNotice.setAttribute('role','status');couplingNotice.hidden=true;document.body.appendChild(couplingNotice);
+  function couplingSay(text){say(text);couplingNotice.textContent=text;couplingNotice.hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(function(){couplingNotice.hidden=true;},4500);}
+  function detachImplement(){if(!data.tool)return false;var s=window.__tractor,v=window.__world.tractorObj,id=data.tool,p=data.implements[id-1],offset=v?Math.max(1.40,v.geo.rearY+.58)+([4,5,6,7,8,9].includes(id)?.55:0):1.4,back=v?v.geo.rearZ-offset:-2.6;
+    p.x=s.pos.x+Math.sin(s.heading)*back;p.z=s.pos.z+Math.cos(s.heading)*back;p.heading=s.heading;data.tool=0;oldVehicle=null;lastMove=null;passHeading=null;dirty=true;drawParked();return true;}
+  function detachForVehicleSwitch(){if(data.tool){detachImplement();save();}}
+  function nearestImplement(){var s=window.__tractor,v=window.__world.tractorObj;if(!v||v.id==='jcb4cx')return null;var hx=s.pos.x+Math.sin(s.heading)*(v.geo.rearZ-.3),hz=s.pos.z+Math.cos(s.heading)*(v.geo.rearZ-.3),best=null;
+   for(var i=1;i<names.length;i++){var p=data.implements[i-1],dx=p.x+Math.sin(p.heading)*1.1-hx,dz=p.z+Math.cos(p.heading)*1.1-hz,dist=Math.hypot(dx,dz),angle=Math.abs(Math.atan2(Math.sin(s.heading-p.heading),Math.cos(s.heading-p.heading)));if(dist<=2.0&&angle<Math.PI/3&&(!best||dist<best.dist))best={id:i,dist:dist};}return best;}
+  function toggleImplement(){var s=window.__tractor,v=window.__world.tractorObj;if(Math.abs(s.speed)>.3){couplingSay('Остановись перед сцепкой или отцеплением.');return false;}if(!v||v.id==='jcb4cx'){couplingSay('Орудия подключаются к трактору, не к JCB.');return false;}
+   if(data.tool){var name=names[data.tool];detachImplement();save();couplingSay(name+' отцеплен и оставлен на месте.');return true;}
+   if(data.trailer.attached){root.querySelector('#haul-hitch').click();couplingSay(data.trailer.attached?'Не удалось отцепить прицеп.':'Прицеп отцеплен.');return !data.trailer.attached;}
+   var found=nearestImplement();if(!found){var tr=data.trailer,hx=s.pos.x+Math.sin(s.heading)*(v.geo.rearZ-.3),hz=s.pos.z+Math.cos(s.heading)*(v.geo.rearZ-.3),tx=tr.x+Math.sin(tr.heading)*2.85,tz=tr.z+Math.cos(tr.heading)*2.85;if(Math.hypot(hx-tx,hz-tz)<=3){root.querySelector('#haul-hitch').click();couplingSay(tr.attached?'Прицеп сцеплен.':'Не удалось сцепить прицеп.');return !!tr.attached;}couplingSay('Подъедь задней навеской к орудию. Площадка орудий: x 20–56, z −14.');return false;}
+   data.tool=found.id;oldVehicle=null;lastMove=null;passHeading=null;s.hitchTarget=1;dirty=true;drawParked();save();couplingSay('Сцеплено: '+names[data.tool]+'. Опусти навеску для работы.');return true;}
+  drawParked();
   /* Простой буксируемый прицеп. Кинематика сцепки, не физический solver. */
   var trailer=new THREE.Group(), chassis=new THREE.Group(), tip=new THREE.Group(), grainMesh, wheels=[];
   trailer.name='grain-trailer';window.__world.scene.add(trailer);trailer.add(chassis);trailer.add(tip);
@@ -9278,7 +9317,7 @@ window.addEventListener('keydown',function(e){
     var tr=data.trailer,s=window.__tractor,v=window.__world.tractorObj;
     if(tr.attached){if(Math.abs(s.speed)>.3){say('Остановись перед отцеплением.');return;}tr.attached=false;dirty=true;save();say('Прицеп отцеплен.');return;}
     if(!v||v.id==='jcb4cx'){say('Для прицепа выбери трактор.');return;}
-    if(data.tool!==0){say('Сначала выбери «Без орудия», чтобы освободить сцепку.');return;}
+    if(data.tool!==0){say('Сначала отцепи орудие, чтобы освободить сцепку.');return;}
     if(Math.abs(s.speed)>.3){say('Остановись перед сцепкой.');return;}
     var hx=s.pos.x+Math.sin(s.heading)*(v.geo.rearZ-.3),hz=s.pos.z+Math.cos(s.heading)*(v.geo.rearZ-.3);
     var tx=tr.x+Math.sin(tr.heading)*2.85,tz=tr.z+Math.cos(tr.heading)*2.85;
@@ -9332,9 +9371,9 @@ window.addEventListener('keydown',function(e){
     var moveX=tr.x-spinX,moveZ=tr.z-spinZ;
     var rolling=(moveX*Math.sin(tr.heading)+moveZ*Math.cos(tr.heading))/.4;
     wheels.forEach(function(w){w.rotateY(rolling);});spinX=tr.x;spinZ=tr.z;
-    trailer.position.set(tr.x,Terrain.heightAt(tr.x,tr.z),tr.z);trailer.rotation.y=tr.heading;
+    trailer.position.set(tr.x,Village.surfaceHeightAt(tr.x,tr.z),tr.z);trailer.rotation.y=tr.heading;
     // Уклон под парой осей и шириной колеи, без полной симуляции подвески.
-    var sn=Math.sin(tr.heading),cs=Math.cos(tr.heading),th=Terrain.heightAt;
+    var sn=Math.sin(tr.heading),cs=Math.cos(tr.heading),th=Village.surfaceHeightAt;
     var fh=th(tr.x+sn*.86,tr.z+cs*.86),rh=th(tr.x-sn*.86,tr.z-cs*.86);
     var lh=th(tr.x-cs*1.04,tr.z+sn*1.04),rrh=th(tr.x+cs*1.04,tr.z-sn*1.04);
     trailer.rotation.x=-Math.atan2(fh-rh,1.72);trailer.rotation.z=Math.atan2(rrh-lh,2.08);
@@ -9435,7 +9474,7 @@ window.addEventListener('keydown',function(e){
   }
   paint();refreshRelief();refreshCrops();window.addEventListener('pagehide',function(){if(dirty)save();});
   var prev=performance.now();function tick(now){requestAnimationFrame(tick);var dt=Math.min((now-prev)/1000,.1);prev=now;update(dt);}requestAnimationFrame(tick);
-  window.__farm={data:data,suspendSave:function(on){saveSuspended=!!on;},transact:transact,contractTool:contractTool,fertilizerStock:fertilizerStock,takeFertilizer:takeFertilizer,growOwnCrops:growOwnCrops,addGrain:addGrain,addStraw:addStraw,cerealStock:cerealStock,takeCereal:takeCereal,oilStock:oilStock,takeOilSeed:takeOilSeed,indexAt:indexAt,soilInfo:soilInfo,reliefAt:reliefAt,driveLoad:driveLoad,work:work,update:update,save:save,paint:paint,refreshRelief:refreshRelief,refreshCrops:refreshCrops,nextTool:nextTool,cropNames:cropNames,cropSeconds:cropSeconds,cropYield:cropYield,yieldWithFertilizer:yieldWithFertilizer,yieldWithWeeds:yieldWithWeeds,yieldWithSoil:yieldWithSoil,pollinationBonus:pollinationBonus,beeYield:beeYield,markDirty:function(){dirty=true;},say:say};
+  window.__farm={data:data,suspendSave:function(on){saveSuspended=!!on;},transact:transact,contractTool:contractTool,fertilizerStock:fertilizerStock,takeFertilizer:takeFertilizer,growOwnCrops:growOwnCrops,addGrain:addGrain,addStraw:addStraw,cerealStock:cerealStock,takeCereal:takeCereal,oilStock:oilStock,takeOilSeed:takeOilSeed,indexAt:indexAt,soilInfo:soilInfo,reliefAt:reliefAt,driveLoad:driveLoad,work:work,update:update,save:save,paint:paint,refreshRelief:refreshRelief,refreshCrops:refreshCrops,nextTool:nextTool,toggleImplement:toggleImplement,nearestImplement:nearestImplement,detachForVehicleSwitch:detachForVehicleSwitch,cropNames:cropNames,cropSeconds:cropSeconds,cropYield:cropYield,yieldWithFertilizer:yieldWithFertilizer,yieldWithWeeds:yieldWithWeeds,yieldWithSoil:yieldWithSoil,pollinationBonus:pollinationBonus,beeYield:beeYield,markDirty:function(){dirty=true;},say:say};
 })();
 
 </script>
@@ -9839,7 +9878,7 @@ window.addEventListener('keydown',function(e){
   return {total:cells.length,counts:counts,crops:crops,weed:weed,acid:acid,plow:plow,fertilized:fert,rolled:rolled,mulched:mulched};}
  function availableFields(){var result=[{id:'kolos',name:'Колос',status:'своё',state:data,x:24,z:92}];land.defs.forEach(function(f,id){var st=land.state(id),job=c.contract;if(st)result.push({id:id,name:'Поле '+(id+2),status:'своё',state:st,x:f.x,z:f.z});else if(job&&job.active&&job.field===id&&data.land[id])result.push({id:id,name:'Поле '+(id+2),status:'контракт',state:data.land[id],x:f.x,z:f.z});});return result;}
  function navigateField(id){var row=availableFields().filter(function(f){return String(f.id)===String(id);})[0];if(!row)return no('Поле больше недоступно.');if(!window.__ruralMap)return no('Карта ещё не готова.');return window.__ruralMap.setWaypoint({x:row.x,z:row.z,name:row.name})?{ok:true,message:'Метка поставлена: '+row.name+'. Закрой панель и следуй подсказке.'}:no('Не удалось поставить метку.');}
- function jobText(){var j=c.contract;if(j&&j.active&&j.kind==='transport')return 'Поставка: '+j.delivered+'/'+j.target+' ед. · осталось у магазина '+j.stock+' · награда '+j.reward+' ₽.<br>Прицеп сцеплен: загрузи у агромагазина (−96, −19) кнопкой «Загрузить контракт», отвези на ферму (62, −97) и нажми «Разгрузить / продать» в панели фермы. После двух рейсов забери награду. Для сцепки выбери «Без орудия».';if(!j||!j.active)return 'Заказы по 100 ячеек: вспашка 1 400 ₽, культивация 1 200 ₽, посев 1 800 ₽, удобрение 1 700 ₽, прополка 1 500 ₽, известкование 1 600 ₽, прикатывание 1 300 ₽, мульчирование 1 400 ₽, уборка и доставка 2 200 ₽. Поставка 1 500 ед. с магазина на ферму — 2 400 ₽. Расходники свои.';
+ function jobText(){var j=c.contract;if(j&&j.active&&j.kind==='transport')return 'Поставка: '+j.delivered+'/'+j.target+' ед. · осталось у магазина '+j.stock+' · награда '+j.reward+' ₽.<br>Прицеп сцеплен: загрузи у агромагазина (−96, −19) кнопкой «Загрузить контракт», отвези на ферму (62, −97) и нажми «Разгрузить / продать» в панели фермы. После двух рейсов забери награду. Перед сцепкой прицепа отцепи орудие.';if(!j||!j.active)return 'Заказы по 100 ячеек: вспашка 1 400 ₽, культивация 1 200 ₽, посев 1 800 ₽, удобрение 1 700 ₽, прополка 1 500 ₽, известкование 1 600 ₽, прикатывание 1 300 ₽, мульчирование 1 400 ₽, уборка и доставка 2 200 ₽. Поставка 1 500 ед. с магазина на ферму — 2 400 ₽. Расходники свои.';
   var title='Поле '+(j.field+2)+' · '+({sow:'посев',fertilize:'удобрение',harvest:'уборка',cultivate:'культивация',plow:'вспашка',weed:'прополка',lime:'известкование',roll:'прикатывание',mulch:'мульчирование'})[j.kind||'plow']+' '+j.progress+'/'+j.target+' · награда '+j.reward+' ₽';
   if(j.deliveryMode){var percent=Math.floor(80*j.progress/j.target+20*j.delivered/j.deliveryTarget);title+='<br>Доставлено '+j.delivered+'/'+j.deliveryTarget+' · на поле '+j.stock+' · прогресс '+percent+'%.<br>Подвези прицеп на поле, загрузи контрактный урожай и доставь на элеватор. Грузы не смешиваются.';}return title;}
  function button(id,text){return '<button data-act="'+id+'">'+text+'</button>';}
@@ -9877,8 +9916,8 @@ window.addEventListener('keydown',function(e){
    ['jcb4cx','agrotech6150r','titan940'].forEach(function(id){var price=fleetPrices[id],cond=vehicleAvailable(id)?vehicleCondition(id):null;html+='<div class="shop-vehicle"><b>'+fleetNames[id]+'</b> · '+vehicleStatus(id)+(cond?' · топливо '+Math.round(cond.fuel)+'% · износ '+cond.wear.toFixed(1)+'%':'')+'<br>Цена '+price+' ₽ · аренда '+Math.ceil(price*.15)+' ₽'+(c.fleet.owned[id]?' · продажа '+resaleValue(id)+' ₽':'')+'<br>'+button('buy-'+id,'Купить')+button('rent-'+id,'Аренда')+button('sell-'+id,pendingSale===id?'Подтвердить продажу':'Продать')+button('return-'+id,'Вернуть')+'</div>';});
   }
   if(activeTab==='goals'){html='<div class="section-heading goals-heading"><div><span class="section-kicker">ВАШ ПРОГРЕСС</span><h3>Развитие хозяйства</h3></div></div><p class="market-note">Счётчики учитывают новые действия после добавления целей; награду получают вручную один раз.</p><div class="goals-grid">';goals.forEach(function(g){var n=Math.min(g.target,Math.max(0,Math.floor(c.stats[g.id]))),pct=Math.min(100,Math.round(n*100/g.target)),claimed=c.claimedGoals[g.id];html+='<div class="goal-row"><div class="goal-top"><b>'+g.title+'</b><span>'+n+' / '+g.target+'</span></div><div class="goal-progress" role="progressbar" aria-label="'+g.title+'" aria-valuemin="0" aria-valuemax="'+g.target+'" aria-valuenow="'+n+'"><i style="width:'+pct+'%"></i></div><div class="goal-bottom"><span>'+(claimed?'✓ Награда получена':'Награда · '+g.reward+' ₽')+'</span>'+(claimed?'':button('goal-'+g.id,'Получить награду'))+'</div></div>';});html+='</div>';}
-  if(activeTab==='soil')html='<p><b>Удобрение: '+(c.fertilizerMode==='organic'?'органическое':'минеральное')+'</b> · минеральное '+data.fertilizer+' · органика '+c.manure+'/300</p>'+button('fertilizerMode','Сменить тип удобрения')+'<p>Кормимый и напоенный коровник производит 5 ед. органики вместе с каждой порцией молока, максимум 300. Подстилка из соломы может увеличить выпуск до 10 ед. за цикл. Обычный разбрасыватель расходует выбранный запас по 1 ед. на ячейку; действие и бонус такие же, как у минерального удобрения. Кузова, запаха и физической перевозки навоза нет.</p><p><b>Мульчирование</b></p><p>Мульчирователь (орудие I) один раз обрабатывает стерню после уборки. Следующая уборка на обработанной ячейке получает +5% к базовой урожайности до штрафов и округления. Затем бонус расходуется.</p><p><b>Повреждение посевов: '+(c.cropDamage?'включено':'выключено')+'</b></p>'+button('damage','Переключить повреждение')+'<p>Колёса движущейся техники уничтожают посевы на собственных полях. Узкие колёса защищают посев; при опущенных уборочной жатке, разбрасывателе, пропольнике или катке посевы также защищены. На контрактных и чужих полях повреждения нет. Следов прицепа пока нет.</p><p><b>Периодическая вспашка: '+(c.plowingEnabled?'включена':'выключена')+'</b></p>'+button('plowing','Переключить вспашку')+'<p>После трёх уборок на собственной ячейке нужна вспашка: следующий урожай на ней уменьшается на 15%. Плуг сбрасывает счётчик; культиватор готовит почву к посеву, но счётчик не сбрасывает. Учитываются только уборки при включённой настройке. На контрактных полях штрафа нет.</p><p><b>Сорняки: '+(c.weedsEnabled?'включены':'выключены')+'</b></p>'+button('weeds','Переключить сорняки')+'<p>Новые посевы получают 40% сорняков, к созреванию — 100%. Пропольник удаляет сорняки на растущих и зрелых посевах. Потеря при уборке — до 20% урожая пропорционально засорённости. При выключении штраф не применяется. Обычные контрактные посевы не засоряются; в контракте на прополку поле уже с сорняками.</p><p>Выбери пропольник кнопкой «Орудие» или клавишей I и опусти навеску. Уровень под трактором указан в панели фермы.</p><p><b>Кислотность: '+(c.limeEnabled?'включена':'выключена')+'</b> · известь '+data.lime+'</p>'+button('lime','Переключить кислотность')+'<p>После каждой уборки кислотность ячейки растёт на 25% и снижает следующий урожай до 15%. На пустой, вспаханной земле или стерне известкователь расходует 1 ед. и сбрасывает кислотность. Известь — у магазина или АЗС. Собственное поле обрабатывается независимо от контрактов на известкование.</p><p><b>Прикатывание</b>: каток работает один раз по растущим посевам и добавляет 5% к базовой урожайности. На зрелых собственных посевах не действует; контракт на прикатывание выполняется отдельно.</p>';
-  if(activeTab==='helper')html='<p><b>Помощник: '+(helper.active?'работает':helper.stopping?'останавливается':helper.reason)+'</b></p><p>Прямой проход на текущем тракторе: 1 ₽ за секунду. Поставь трактор на своё или контрактное поле, направь вдоль него, выбери орудие и остановись.</p>'+button('helper',helper.active?'Остановить помощника':'Нанять помощника')+'<p>Остановится перед краем или при нехватке денег, топлива или расходников. Ручной газ, тормоз или руль возвращают управление. Разворотов и обхода препятствий нет; следи за техникой. Клавиша H.</p>';
+  if(activeTab==='soil')html='<p><b>Удобрение: '+(c.fertilizerMode==='organic'?'органическое':'минеральное')+'</b> · минеральное '+data.fertilizer+' · органика '+c.manure+'/300</p>'+button('fertilizerMode','Сменить тип удобрения')+'<p>Кормимый и напоенный коровник производит 5 ед. органики вместе с каждой порцией молока, максимум 300. Подстилка из соломы может увеличить выпуск до 10 ед. за цикл. Обычный разбрасыватель расходует выбранный запас по 1 ед. на ячейку; действие и бонус такие же, как у минерального удобрения. Кузова, запаха и физической перевозки навоза нет.</p><p><b>Мульчирование</b></p><p>Мульчирователь (сцепи на площадке орудий) один раз обрабатывает стерню после уборки. Следующая уборка на обработанной ячейке получает +5% к базовой урожайности до штрафов и округления. Затем бонус расходуется.</p><p><b>Повреждение посевов: '+(c.cropDamage?'включено':'выключено')+'</b></p>'+button('damage','Переключить повреждение')+'<p>Колёса движущейся техники уничтожают посевы на собственных полях. Узкие колёса защищают посев; при опущенных уборочной жатке, разбрасывателе, пропольнике или катке посевы также защищены. На контрактных и чужих полях повреждения нет. Следов прицепа пока нет.</p><p><b>Периодическая вспашка: '+(c.plowingEnabled?'включена':'выключена')+'</b></p>'+button('plowing','Переключить вспашку')+'<p>После трёх уборок на собственной ячейке нужна вспашка: следующий урожай на ней уменьшается на 15%. Плуг сбрасывает счётчик; культиватор готовит почву к посеву, но счётчик не сбрасывает. Учитываются только уборки при включённой настройке. На контрактных полях штрафа нет.</p><p><b>Сорняки: '+(c.weedsEnabled?'включены':'выключены')+'</b></p>'+button('weeds','Переключить сорняки')+'<p>Новые посевы получают 40% сорняков, к созреванию — 100%. Пропольник удаляет сорняки на растущих и зрелых посевах. Потеря при уборке — до 20% урожая пропорционально засорённости. При выключении штраф не применяется. Обычные контрактные посевы не засоряются; в контракте на прополку поле уже с сорняками.</p><p>Подъедь задней навеской к пропольнику, остановись, нажми ⇄ или I и опусти навеску. Уровень под трактором указан в панели фермы.</p><p><b>Кислотность: '+(c.limeEnabled?'включена':'выключена')+'</b> · известь '+data.lime+'</p>'+button('lime','Переключить кислотность')+'<p>После каждой уборки кислотность ячейки растёт на 25% и снижает следующий урожай до 15%. На пустой, вспаханной земле или стерне известкователь расходует 1 ед. и сбрасывает кислотность. Известь — у магазина или АЗС. Собственное поле обрабатывается независимо от контрактов на известкование.</p><p><b>Прикатывание</b>: каток работает один раз по растущим посевам и добавляет 5% к базовой урожайности. На зрелых собственных посевах не действует; контракт на прикатывание выполняется отдельно.</p>';
+  if(activeTab==='helper')html='<p><b>Помощник: '+(helper.active?'работает':helper.stopping?'останавливается':helper.reason)+'</b></p><p>Прямой проход на текущем тракторе: 1 ₽ за секунду. Поставь трактор на своё или контрактное поле, направь вдоль него, сцепи подходящее орудие и остановись.</p>'+button('helper',helper.active?'Остановить помощника':'Нанять помощника')+'<p>Остановится перед краем или при нехватке денег, топлива или расходников. Ручной газ, тормоз или руль возвращают управление. Разворотов и обхода препятствий нет; следи за техникой. Клавиша H.</p>';
   if(activeTab==='finance'){
    var ledger=c.finance||{},curKey=c.year+'-'+String(c.month).padStart(2,'0'),prevMonth=c.month===1?12:c.month-1,prevYear=c.month===1?c.year-1:c.year,prev=ledger[prevYear+'-'+String(prevMonth).padStart(2,'0')],current=ledger[curKey]||{},cats=current.categories||{};
    var labels={sales:'Продажи продукции и грунта',rewards:'Заказы и цели',land:'Земля',vehicles:'Техника',rental:'Аренда',fuel:'Топливо',supplies:'Расходники и вода',repair:'Ремонт',helper:'Помощник',buildings:'Хозяйство и производства',interest:'Проценты',loan:'Кредит: выдача / возврат'};
@@ -10114,7 +10153,7 @@ window.addEventListener('keydown',function(e){
    var v=window.__world&&window.__world.tractorObj,jcb=v&&v.id==='jcb4cx',s=window.__tractor,f=window.__farm;
    tool.style.display=jcb?'none':'';backhoe.style.display=jcb?'':'none';
    var n=f?['Без орудия','Плуг','Сеялка','Жатка','Разбрасыватель','Пропольник','Известкователь','Каток','Культиватор'][f.data.tool]:'Без орудия';
-   toolInfo.textContent=jcb?'Ковш: '+(s.hitchTarget?'поднят':'опущен')+' · 🔧':n+(f&&f.data.tool?' · '+(s.hitchTarget?'поднято':'опущено')+' · 🔧':' · I: выбрать');
+   var nearby=f&&f.nearestImplement?f.nearestImplement():null;toolInfo.textContent=jcb?'Ковш: '+(s.hitchTarget?'поднят':'опущен')+' · 🔧':n+(f&&f.data.tool?' · '+(s.hitchTarget?'поднято':'опущено')+' · ⇄ / I: отцепить':nearby?' · рядом '+(['','Плуг','Сеялка','Жатка','Разбрасыватель','Пропольник','Известкователь','Каток','Культиватор','Мульчирователь'][nearby.id])+' · ⇄ / I: сцепить':' · Орудия: x 20–56, z −14');
    if(window.__career&&window.__career.helper.active)toolInfo.textContent+=' · Помощник';
  }
 
