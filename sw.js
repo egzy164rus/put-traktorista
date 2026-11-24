@@ -1,5 +1,5 @@
 /* Кэш приложения в пределах каталога GitHub Pages. Данные карьеры в кэш не помещаются. */
-const CACHE = 'put-traktorista-pwa-v2';
+const CACHE = 'put-traktorista-pwa-v3';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon/icon-192.png', './icon/icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)).then(() => self.skipWaiting()));

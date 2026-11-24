@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#1c2a17" />
 <meta name="theme-color" content="#101b19" />
 <link rel="manifest" href="./manifest.webmanifest" />
 <link rel="icon" href="./icon/icon-192.png" type="image/png" />
@@ -754,6 +755,11 @@ html {-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .setup-options-title {margin:14px 0 7px;font-size:10px;letter-spacing:.14em;font-weight:750;color:#a9c491}.setup-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.setup-options .setup-check{display:flex;align-items:center;gap:8px;width:auto;box-sizing:border-box;margin:0;padding:8px 10px;border:1px solid #ffffff17;border-radius:4px;background:#ffffff08;font-size:12px}.setup-options .setup-check:has(input:checked){border-color:#b9d67a78;background:#a2c56d1c}.setup-extra{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:12px}
 @media(max-height:500px){.setup-options-title{margin:8px 0 5px}.setup-options{gap:3px}.setup-options .setup-check{padding:5px 8px}.setup-extra{margin-top:8px}}
 @media(max-width:550px) and (orientation:portrait){.setup-options,.setup-extra{grid-template-columns:1fr}}
+/* Магазин техники */
+#shop-open{position:fixed;left:max(10px,env(safe-area-inset-left));bottom:105px;z-index:48;background:#d1e69c;color:#182a1b;border:1px solid #e2efbd;border-radius:6px;padding:9px 12px;font:700 12px system-ui;cursor:pointer;box-shadow:0 4px 14px #0006}
+#shop-panel{position:fixed;inset:0;z-index:220;color:#edf4e8;background:#101b19;font:14px/1.45 system-ui}#shop-panel[hidden]{display:none!important}.shop-shell{height:100%;display:flex;flex-direction:column;background:radial-gradient(ellipse at 90% 0%,#334d3b99,transparent 50%),linear-gradient(145deg,#1b2b27,#101b1a)}.shop-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px clamp(16px,3vw,34px);background:#101b19;border-bottom:1px solid #ffffff20}.shop-header strong{display:block;font-size:21px;color:#f5f7ef}.shop-header-right{display:flex;align-items:center;gap:16px;white-space:nowrap}#shop-balance{font-size:13px;color:#c9dbbf}#shop-close{background:#c3dc7e;color:#18281c;border:0;border-radius:5px;padding:10px 14px;font-weight:700}.shop-tabs{display:flex;gap:7px;padding:12px clamp(16px,3vw,34px);border-bottom:1px solid #ffffff1c;overflow:auto}.shop-tabs button,.shop-actions button{white-space:nowrap;border:1px solid #739070;background:#30483a;color:#edf4eb;border-radius:5px;padding:9px 12px;font:650 13px system-ui;cursor:pointer}.shop-tabs button.active{background:#c1dc7c;color:#17291b;border-color:#c1dc7c}.shop-content{flex:1;min-height:0;overflow:auto;padding:20px clamp(16px,3vw,34px)}#shop-body{max-width:1200px}.shop-intro{padding:16px 20px;background:linear-gradient(110deg,#324c37,#1d332b);border:1px solid #8ca98455;border-radius:6px}.shop-intro h2{font-size:22px;margin:3px 0;color:#f4f8ee}.shop-intro p{max-width:90ch;margin:3px 0;color:#c8d9c9;font-size:12px}.shop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:9px;margin-top:12px}.shop-product{display:flex;flex-direction:column;gap:10px;padding:15px;border:1px solid #718c7c55;border-radius:6px;background:#253a31}.shop-product-icon{color:#d3e69e;font-size:20px}.shop-product h3{margin:3px 0;color:#f4f8ed}.shop-product p{font-size:12px;color:#bacdbb;margin:4px 0}.shop-product strong{color:#d7eca2}.shop-actions{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto}.shop-actions button{font-size:12px}#shop-message{position:sticky;bottom:0;margin:10px 0 0;padding:9px 12px;border-radius:5px;background:#293e2d;border:1px solid #9bc17a;color:#e6f6d0}#shop-message.error{background:#4a3326;border-color:#c6976d;color:#ffe4c0}#shop-message:empty{display:none}
+@media(max-height:500px){#shop-open{top:91px;bottom:auto;left:auto;right:10px;padding:7px}.shop-header{padding:6px 15px}.shop-header strong{font-size:16px}.shop-tabs{padding:6px 15px}.shop-tabs button{padding:6px 10px}.shop-content{padding:10px 15px}.shop-intro{padding:10px 13px}.shop-intro h2{font-size:18px}.shop-product{padding:10px}.shop-grid{margin-top:7px;gap:6px}.shop-product-icon{display:none}}
+@media(max-width:450px){#shop-balance{display:none}.shop-grid{grid-template-columns:1fr}}
 
 </style>
 </head>
@@ -6919,7 +6925,7 @@ window.Village = (function () {
   // Маршруты общие с картой, координаты полей и объектов не меняются.
   function roadDistance(x,z){var min=Infinity;countryRoutes.forEach(function(r){for(var i=1;i<r.length;i++){var a=r[i-1],b=r[i],dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz,t=l?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/l)):0;min=Math.min(min,Math.hypot(x-a[0]-t*dx,z-a[1]-t*dz));}});return min;}
   // Высота полотна для колёс: плавный переход по краям дороги и обочины.
-  function surfaceHeightAt(x,z){var best=0;countryRoutes.forEach(function(r,id){var paved=id===0||id===1||id===3,half=paved?3.25:2.9,shoulder=paved?4.3:3.65;
+  function surfaceHeightAt(x,z){var best=(Math.abs(x+96)<=32&&Math.abs(z+27)<=21)? .11:0;countryRoutes.forEach(function(r,id){var paved=id===0||id===1||id===3,half=paved?3.25:2.9,shoulder=paved?4.3:3.65;
     for(var i=1;i<r.length;i++){var a=r[i-1],b=r[i],dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz,t=l?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/l)):0,d=Math.hypot(x-a[0]-t*dx,z-a[1]-t*dz);if(d>shoulder+.3)continue;
       var top=(paved?.32:.28)+id*.001,edge=.20+id*.001,value=d<half-.15?top:d<half+.15?top+(edge-top)*(d-(half-.15))/.3:d<shoulder-.3?edge:edge*Math.max(0,(shoulder+.3-d)/.6);best=Math.max(best,value);
     }});return Terrain.heightAt(x,z)+best;}
@@ -7012,6 +7018,10 @@ window.Village = (function () {
     for(var i=0;i<p.count;i++)p.setY(i,H(x+p.getX(i),z+p.getZ(i))+.11);g.computeVertexNormals();
     var m=new THREE.Mesh(g,new THREE.MeshLambertMaterial({color:new THREE.Color(0x777567).convertSRGBToLinear()}));m.position.set(x,0,z);m.name=name;m.receiveShadow=true;return m;
   }
+  // Торговый комплекс: собственная площадка, фасад и выдача покупок.
+  function cityDealership(){var g=new THREE.Group();g.name='city-dealership';var x=-109,z=-43,y=H(x,z),concrete=new THREE.MeshLambertMaterial({color:0x8d958e}),dark=new THREE.MeshLambertMaterial({color:0x344442}),trim=new THREE.MeshLambertMaterial({color:0xc5c9b9}),glass=new THREE.MeshLambertMaterial({color:0x47646b,emissive:0x172323}),accent=new THREE.MeshLambertMaterial({color:0x71944d});
+   g.position.set(x,y,z);box(g,22,5.5,10,0,2.9,0,concrete).name='dealership-main-building';box(g,22.8,.4,10.8,0,5.8,0,dark);box(g,22.2,.55,.15,0,4.75,5.09,accent);box(g,7.4,3.7,.12,-5.3,2.3,5.09,glass);box(g,7.4,3.7,.12,4.8,2.3,5.09,glass);box(g,2.3,3.5,.15,0,2.15,5.14,dark);[-8.8,-5.3,-1.8,1.3,4.8,8.3].forEach(function(px){box(g,.1,3.7,.16,px,2.3,5.2,trim);});var sign=signPlate('АГРОЦЕНТР','ТЕХНИКА  •  ЗАПЧАСТИ','#283e35','#e6efcf',8);sign.position.set(0,5.1,5.25);g.add(sign);return g;}
+  function dealerLot(){var g=new THREE.Group();g.name='dealership-complex';g.add(yardSurface(-96,-27,64,42,'dealership-paved-yard'));g.add(cityDealership());var paint=new THREE.MeshLambertMaterial({color:0xe4e3c4});for(var i=0;i<5;i++){var xx=-124+i*6;var stripe=box(g,.09,.04,5,xx,H(xx,-13)+.17,-13,paint);stripe.name='dealership-parking-line';}g.add(roadsideSign(-75,-32,'АГРОЦЕНТР','ПРОДАЖА И ВЫДАЧА',Math.PI/2));return g;}
   function vegetableGarden(x,z){
     var g=new THREE.Group();g.name='village-vegetable-garden';g.position.set(x,H(x,z)+.14,z);
     var dirt=new THREE.Mesh(new THREE.PlaneGeometry(6,4),new THREE.MeshLambertMaterial({color:0x594735,side:THREE.DoubleSide}));dirt.rotation.x=-Math.PI/2;g.add(dirt);
@@ -7037,8 +7047,7 @@ window.Village = (function () {
     scene.add(farmBuilding(52,-87,9,7,'МАСТЕРСКАЯ','farm-workshop'));
     scene.add(farmBuilding(70,-87,11,7,'СКЛАД','farm-storage'));
     scene.add(roadsideSign(67,-102,'ФЕРМА','склад и мастерская',0));
-    scene.add(farmBuilding(-96,-19,8,6,'АГРОМАГАЗИН','village-supply-store'));
-    scene.add(farmBuilding(-109,-36,7,5,'САРАЙ','village-outbuilding'));
+    scene.add(dealerLot());
     [[-48,36],[-85,44],[-103,8],[-121,51],[-151,62],[-159,90]].forEach(function(p){scene.add(vegetableGarden(p[0],p[1]));});
     scene.add(forestBelts());
     scene.add(makeLamp(-113,19));scene.add(makeLamp(-135,60));
@@ -7808,6 +7817,7 @@ window.DayCycle = (function () {
     if(window.__career&&!window.__career.vehicleAvailable(entry.id)){if(!silent)toast('Машина недоступна: купи или арендуй её в агромагазине.');return null;}
     if(window.__farm&&window.__farm.detachForVehicleSwitch)window.__farm.detachForVehicleSwitch();
     if(window.__career)window.__career.beforeVehicleSwitch();
+    if(window.__shop)window.__shop.pickupVehicle(entry.id);
     if (tractor) scene.remove(tractor);
     mtz = entry.build();
     tractor = mtz.group;
@@ -7869,7 +7879,7 @@ window.DayCycle = (function () {
   };
   window.__tractor = S; // отладочный доступ для автотестов
   window.__setVehicle = function (id) { return setVehicle(id); };
-  window.__world = { scene: scene, camera: camera, renderer: renderer, get tractorObj() { return mtz; }, get village() { return village; }, get sunLight() { return sunLight; }, get ringMats() { return ringMats; } };
+  window.__world = { scene: scene, camera: camera, renderer: renderer, vehicleRegistry: VEHICLES, get tractorObj() { return mtz; }, get village() { return village; }, get sunLight() { return sunLight; }, get ringMats() { return ringMats; } };
   var WHEELBASE = 2.37;
 
   /* ---------- Камеры ---------- */
@@ -8561,7 +8571,7 @@ window.addEventListener('keydown',function(e){
    Преобразование FBX в GLB, уменьшение карт, временная замена материалов и привязка колёс. */
 (function () {
   'use strict';
-  if (true) return; // PWA: автономная процедурная модель, без загрузки GLB.
+  if (new URLSearchParams(location.search).get('classicJCB') === '1') return;
   if (location.protocol === 'file:') { console.warn('JCB experiment requires a local web server.'); return; }
   var credit = document.createElement('a');
   credit.href = 'https://sketchfab.com/3d-models/jcb-backhoe-loader-2a61c987f8b048f592e084b4eefc1dd1';
@@ -8738,6 +8748,8 @@ window.addEventListener('keydown',function(e){
   // У каждого орудия сохраняется место, где его оставили. Старые сохранения сохраняют прицеплённый инструмент.
   var defaultToolSpots=Array.from({length:9},function(_,i){return {x:20+i*4.5,z:-14,heading:0};});
   data.implements=defaultToolSpots.map(function(pos,i){var old=saved&&Array.isArray(saved.implements)&&saved.implements[i];return old&&Number.isFinite(old.x)&&Number.isFinite(old.z)&&Number.isFinite(old.heading)&&Math.abs(old.x)<300&&Math.abs(old.z)<300?{x:old.x,z:old.z,heading:old.heading}:pos;});
+  data.implementsOwned=Array.isArray(saved&&saved.implementsOwned)&&saved.implementsOwned.length===9?saved.implementsOwned.map(function(x){return x===true;}):Array(9).fill(true);if(data.tool>0)data.implementsOwned[data.tool-1]=true;
+  data.shopStock={seeds:0,fertilizer:0,lime:0};if(saved&&saved.shopStock&&typeof saved.shopStock==='object')Object.keys(data.shopStock).forEach(function(k){var n=saved.shopStock[k];data.shopStock[k]=Number.isFinite(n)?Math.max(0,Math.min(100000,Math.floor(n))):0;});
   // Старые сохранения продолжают работать: новый прицеп и заказ добавляются отдельно.
   // Старые сохранения получают стартовый запас без потери поля и денег.
   data.seeds=saved&&Number.isFinite(saved.seeds)?Math.max(0,Math.floor(saved.seeds)):250;
@@ -9014,21 +9026,9 @@ window.addEventListener('keydown',function(e){
     var n=Math.min(100-s.fuel, data.money/12);if(n<0.1){say(s.fuel>99.9?'Бак уже полный.':'Недостаточно денег.');return;}
     var cost=Math.min(data.money,Math.ceil(n*12));s.fuel=Math.min(100,s.fuel+n);transact(-cost,'fuel');dirty=true;save();say('Заправлено '+Math.round(n)+'% за '+cost+' ₽.');
   };
-  root.querySelector('#farm-seeds').onclick=function(){
-    if(distance(-26,24)>14 && distance(-96,-19)>14){say('За семенами подъедь к агромагазину или деревенской АЗС.');return;}
-    if(data.money<300){say('Для покупки 100 единиц семян нужно 300 ₽.');return;}
-    transact(-300,'supplies');data.seeds+=100;dirty=true;save();say('Куплено 100 единиц семян за 300 ₽.');
-  };
-  root.querySelector('#farm-fertilizer').onclick=function(){
-    if(distance(-26,24)>14&&distance(-96,-19)>14){say('За удобрением подъедь к агромагазину или АЗС.');return;}
-    if(data.money<250){say('Для покупки 100 единиц удобрения нужно 250 ₽.');return;}
-    transact(-250,'supplies');data.fertilizer+=100;dirty=true;save();say('Куплено 100 единиц удобрения за 250 ₽.');
-  };
-  root.querySelector('#farm-lime').onclick=function(){
-    if(distance(-26,24)>14&&distance(-96,-19)>14){say('За известью подъедь к агромагазину или АЗС.');return;}
-    if(data.money<300){say('Для покупки 100 единиц извести нужно 300 ₽.');return;}
-    transact(-300,'supplies');data.lime+=100;dirty=true;save();say('Куплено 100 единиц извести за 300 ₽.');
-  };
+  root.querySelector('#farm-seeds').onclick=function(){if(window.__shop)window.__shop.purchaseFromFarm('seeds');};
+  root.querySelector('#farm-fertilizer').onclick=function(){if(window.__shop)window.__shop.purchaseFromFarm('fertilizer');};
+  root.querySelector('#farm-lime').onclick=function(){if(window.__shop)window.__shop.purchaseFromFarm('lime');};
   root.querySelector('#farm-service').onclick=function(){
     if(distance(-26,24)>14 && distance(-34,-34)>15 && distance(52,-87)>18){say('Для обслуживания подъедь к мастерской фермы, МТС или АЗС.');return;}
     if(data.wear<.1){say('Техника не требует обслуживания.');return;}
@@ -9244,14 +9244,14 @@ window.addEventListener('keydown',function(e){
     data.tool=i;rebuild(fakeVehicle);var g=model;fakeVehicle.group.remove(g);g.position.set(0,0,0);var root3d=new THREE.Group();root3d.name='parked-implement-'+i;root3d.add(g);window.__world.scene.add(root3d);parkedTools.push(root3d);model=null;
    }data.tool=selected;oldVehicle=null;})();
   function parkedPosition(i){var p=data.implements[i-1];return {x:p.x,z:p.z,heading:p.heading};}
-  function drawParked(){parkedTools.forEach(function(obj,index){var p=data.implements[index];obj.visible=data.tool!==index+1;obj.position.set(p.x,Village.surfaceHeightAt(p.x,p.z)+.6,p.z);obj.rotation.y=p.heading;});}
+  function drawParked(){parkedTools.forEach(function(obj,index){var p=data.implements[index];obj.visible=data.implementsOwned[index]&&data.tool!==index+1;obj.position.set(p.x,Village.surfaceHeightAt(p.x,p.z)+.6,p.z);obj.rotation.y=p.heading;});}
   var couplingNotice=document.createElement('div'),noticeTimer;couplingNotice.id='coupling-notice';couplingNotice.setAttribute('role','status');couplingNotice.hidden=true;document.body.appendChild(couplingNotice);
   function couplingSay(text){say(text);couplingNotice.textContent=text;couplingNotice.hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(function(){couplingNotice.hidden=true;},4500);}
   function detachImplement(){if(!data.tool)return false;var s=window.__tractor,v=window.__world.tractorObj,id=data.tool,p=data.implements[id-1],offset=v?Math.max(1.40,v.geo.rearY+.58)+([4,5,6,7,8,9].includes(id)?.55:0):1.4,back=v?v.geo.rearZ-offset:-2.6;
     p.x=s.pos.x+Math.sin(s.heading)*back;p.z=s.pos.z+Math.cos(s.heading)*back;p.heading=s.heading;data.tool=0;oldVehicle=null;lastMove=null;passHeading=null;dirty=true;drawParked();return true;}
   function detachForVehicleSwitch(){if(data.tool){detachImplement();save();}}
   function nearestImplement(){var s=window.__tractor,v=window.__world.tractorObj;if(!v||v.id==='jcb4cx')return null;var hx=s.pos.x+Math.sin(s.heading)*(v.geo.rearZ-.3),hz=s.pos.z+Math.cos(s.heading)*(v.geo.rearZ-.3),best=null;
-   for(var i=1;i<names.length;i++){var p=data.implements[i-1],dx=p.x+Math.sin(p.heading)*1.1-hx,dz=p.z+Math.cos(p.heading)*1.1-hz,dist=Math.hypot(dx,dz),angle=Math.abs(Math.atan2(Math.sin(s.heading-p.heading),Math.cos(s.heading-p.heading)));if(dist<=2.0&&angle<Math.PI/3&&(!best||dist<best.dist))best={id:i,dist:dist};}return best;}
+   for(var i=1;i<names.length;i++){if(!data.implementsOwned[i-1])continue;var p=data.implements[i-1],dx=p.x+Math.sin(p.heading)*1.1-hx,dz=p.z+Math.cos(p.heading)*1.1-hz,dist=Math.hypot(dx,dz),angle=Math.abs(Math.atan2(Math.sin(s.heading-p.heading),Math.cos(s.heading-p.heading)));if(dist<=2.0&&angle<Math.PI/3&&(!best||dist<best.dist))best={id:i,dist:dist};}return best;}
   function toggleImplement(){var s=window.__tractor,v=window.__world.tractorObj;if(Math.abs(s.speed)>.3){couplingSay('Остановись перед сцепкой или отцеплением.');return false;}if(!v||v.id==='jcb4cx'){couplingSay('Орудия подключаются к трактору, не к JCB.');return false;}
    if(data.tool){var name=names[data.tool];detachImplement();save();couplingSay(name+' отцеплен и оставлен на месте.');return true;}
    if(data.trailer.attached){root.querySelector('#haul-hitch').click();couplingSay(data.trailer.attached?'Не удалось отцепить прицеп.':'Прицеп отцеплен.');return !data.trailer.attached;}
@@ -9474,7 +9474,7 @@ window.addEventListener('keydown',function(e){
   }
   paint();refreshRelief();refreshCrops();window.addEventListener('pagehide',function(){if(dirty)save();});
   var prev=performance.now();function tick(now){requestAnimationFrame(tick);var dt=Math.min((now-prev)/1000,.1);prev=now;update(dt);}requestAnimationFrame(tick);
-  window.__farm={data:data,suspendSave:function(on){saveSuspended=!!on;},transact:transact,contractTool:contractTool,fertilizerStock:fertilizerStock,takeFertilizer:takeFertilizer,growOwnCrops:growOwnCrops,addGrain:addGrain,addStraw:addStraw,cerealStock:cerealStock,takeCereal:takeCereal,oilStock:oilStock,takeOilSeed:takeOilSeed,indexAt:indexAt,soilInfo:soilInfo,reliefAt:reliefAt,driveLoad:driveLoad,work:work,update:update,save:save,paint:paint,refreshRelief:refreshRelief,refreshCrops:refreshCrops,nextTool:nextTool,toggleImplement:toggleImplement,nearestImplement:nearestImplement,detachForVehicleSwitch:detachForVehicleSwitch,cropNames:cropNames,cropSeconds:cropSeconds,cropYield:cropYield,yieldWithFertilizer:yieldWithFertilizer,yieldWithWeeds:yieldWithWeeds,yieldWithSoil:yieldWithSoil,pollinationBonus:pollinationBonus,beeYield:beeYield,markDirty:function(){dirty=true;},say:say};
+  window.__farm={data:data,suspendSave:function(on){saveSuspended=!!on;},transact:transact,contractTool:contractTool,fertilizerStock:fertilizerStock,takeFertilizer:takeFertilizer,growOwnCrops:growOwnCrops,addGrain:addGrain,addStraw:addStraw,cerealStock:cerealStock,takeCereal:takeCereal,oilStock:oilStock,takeOilSeed:takeOilSeed,indexAt:indexAt,soilInfo:soilInfo,reliefAt:reliefAt,driveLoad:driveLoad,work:work,update:update,save:save,paint:paint,refreshRelief:refreshRelief,refreshCrops:refreshCrops,refreshParked:drawParked,nextTool:nextTool,toggleImplement:toggleImplement,nearestImplement:nearestImplement,detachForVehicleSwitch:detachForVehicleSwitch,cropNames:cropNames,cropSeconds:cropSeconds,cropYield:cropYield,yieldWithFertilizer:yieldWithFertilizer,yieldWithWeeds:yieldWithWeeds,yieldWithSoil:yieldWithSoil,pollinationBonus:pollinationBonus,beeYield:beeYield,markDirty:function(){dirty=true;},say:say};
 })();
 
 </script>
@@ -9652,8 +9652,8 @@ window.addEventListener('keydown',function(e){
   if(!nearShop())return no('Подъедь к агромагазину, чтобы оформить сделку.');
   if(Math.abs(window.__tractor.speed)>.3)return no('Останови технику перед сделкой.');
   var price=fleetPrices[id];
-  if(action==='buy'){if(c.fleet.owned[id])return no('Машина уже принадлежит тебе.');if(c.fleet.rented[id]>0)return no('Сначала верни арендованную машину.');if(data.money<price)return no('Недостаточно денег: нужно '+price+' ₽.');farm.transact(-price,'vehicles');c.fleet.condition[id]={fuel:100,wear:0};c.fleet.owned[id]=true;return ok('Куплено: '+fleetNames[id]+'. Доступно в гараже.');}
-  if(action==='rent'){if(vehicleAvailable(id))return no('Машина уже доступна.');var fee=Math.ceil(price*.15);if(data.money<fee)return no('Для аренды нужно '+fee+' ₽.');farm.transact(-fee,'rental');c.fleet.condition[id]={fuel:100,wear:0};c.fleet.rented[id]=180;return ok('Аренда '+fleetNames[id]+' на 180 секунд за '+fee+' ₽.');}
+  if(action==='buy'){if(c.fleet.owned[id])return no('Машина уже принадлежит тебе.');if(c.fleet.rented[id]>0)return no('Сначала верни арендованную машину.');if(data.money<price)return no('Недостаточно денег: нужно '+price+' ₽.');farm.transact(-price,'vehicles');c.fleet.condition[id]={fuel:100,wear:0};c.fleet.owned[id]=true;if(window.__shop)window.__shop.deliverVehicle(id);return ok('Куплено: '+fleetNames[id]+'. Машина на площадке агроцентра.');}
+  if(action==='rent'){if(vehicleAvailable(id))return no('Машина уже доступна.');var fee=Math.ceil(price*.15);if(data.money<fee)return no('Для аренды нужно '+fee+' ₽.');farm.transact(-fee,'rental');c.fleet.condition[id]={fuel:100,wear:0};c.fleet.rented[id]=180;if(window.__shop)window.__shop.deliverVehicle(id);return ok('Аренда '+fleetNames[id]+' на 180 секунд за '+fee+' ₽; машина на площадке.');}
   if(action==='sell'){if(!c.fleet.owned[id])return no('Эта машина тебе не принадлежит.');if(window.__tractor.vehicle===id)return no('Сначала пересядь в другую машину.');var refund=resaleValue(id);delete c.fleet.owned[id];delete c.fleet.condition[id];delete c.fleet.wheels[id];farm.transact(refund,'vehicles');return ok('Продано: '+fleetNames[id]+' за '+refund+' ₽.');}
   if(action==='return'){if(!c.fleet.rented[id])return no('Машина не арендована.');if(window.__tractor.vehicle===id){if(window.__career&&window.__career.helper.active)window.__career.helperStop('машина возвращена');window.__setVehicle('mtz82');}delete c.fleet.rented[id];delete c.fleet.condition[id];return ok('Арендованная машина возвращена; плата не возвращается.');}
   return no('Неизвестная операция.');
@@ -9912,7 +9912,7 @@ window.addEventListener('keydown',function(e){
    });html+='</div>';
   }
   if(activeTab==='vehicles'){
-   html='<p><b>Расход топлива: '+({low:'низкий ×0,5',normal:'обычный ×1',high:'высокий ×2'})[c.fuelUsage]+'</b></p>'+button('fuelUsage','Изменить расход')+'<p><b>Узкие колёса: '+(narrowActive()?'установлены':'не установлены')+'</b> · первый комплект 500 ₽</p><p>Первый комплект стоит 500 ₽, смена у магазина бесплатна. Комплект привязан к собственному трактору; внешний вид и сцепление пока не меняются.</p>'+button('wheelConfig','Узкие / обычные колёса')+'<p><b>Агромагазин</b> · баланс '+Math.floor(data.money)+' ₽</p><p>Сделки только рядом с магазином (−96, −19) и на остановленной машине. Аренда: 15% цены за 180 секунд работы игры. Продажа: до 70% цены, с учётом износа. МТЗ остаётся всегда.</p>';
+   html='<p><b>Расход топлива: '+({low:'низкий ×0,5',normal:'обычный ×1',high:'высокий ×2'})[c.fuelUsage]+'</b></p>'+button('fuelUsage','Изменить расход')+'<p><b>Узкие колёса: '+(narrowActive()?'установлены':'не установлены')+'</b> · первый комплект 500 ₽</p><p>Первый комплект стоит 500 ₽, смена у магазина бесплатна. Комплект привязан к собственному трактору; внешний вид и сцепление пока не меняются.</p>'+button('wheelConfig','Узкие / обычные колёса')+'<p><b>Агромагазин</b> · баланс '+Math.floor(data.money)+' ₽</p><p>Сделки только рядом с агроцентром (−96, −19) и на остановленной машине. Купленная техника ожидает на площадке; выбор в гараже переносит к ней. Аренда: 15% цены за 180 секунд работы игры. Продажа: до 70% цены, с учётом износа. МТЗ остаётся всегда.</p>';
    ['jcb4cx','agrotech6150r','titan940'].forEach(function(id){var price=fleetPrices[id],cond=vehicleAvailable(id)?vehicleCondition(id):null;html+='<div class="shop-vehicle"><b>'+fleetNames[id]+'</b> · '+vehicleStatus(id)+(cond?' · топливо '+Math.round(cond.fuel)+'% · износ '+cond.wear.toFixed(1)+'%':'')+'<br>Цена '+price+' ₽ · аренда '+Math.ceil(price*.15)+' ₽'+(c.fleet.owned[id]?' · продажа '+resaleValue(id)+' ₽':'')+'<br>'+button('buy-'+id,'Купить')+button('rent-'+id,'Аренда')+button('sell-'+id,pendingSale===id?'Подтвердить продажу':'Продать')+button('return-'+id,'Вернуть')+'</div>';});
   }
   if(activeTab==='goals'){html='<div class="section-heading goals-heading"><div><span class="section-kicker">ВАШ ПРОГРЕСС</span><h3>Развитие хозяйства</h3></div></div><p class="market-note">Счётчики учитывают новые действия после добавления целей; награду получают вручную один раз.</p><div class="goals-grid">';goals.forEach(function(g){var n=Math.min(g.target,Math.max(0,Math.floor(c.stats[g.id]))),pct=Math.min(100,Math.round(n*100/g.target)),claimed=c.claimedGoals[g.id];html+='<div class="goal-row"><div class="goal-top"><b>'+g.title+'</b><span>'+n+' / '+g.target+'</span></div><div class="goal-progress" role="progressbar" aria-label="'+g.title+'" aria-valuemin="0" aria-valuemax="'+g.target+'" aria-valuenow="'+n+'"><i style="width:'+pct+'%"></i></div><div class="goal-bottom"><span>'+(claimed?'✓ Награда получена':'Награда · '+g.reward+' ₽')+'</span>'+(claimed?'':button('goal-'+g.id,'Получить награду'))+'</div></div>';});html+='</div>';}
@@ -10221,6 +10221,50 @@ window.addEventListener('keydown',function(e){
 
 </script>
 <script>
+/* Агроцентр: покупка и выдача на площадке, без физики паллет и нескольких активных машин. */
+(function(){
+ 'use strict'; if(!window.__farm||!window.__career||!window.__world)return;
+ var farm=__farm,data=farm.data,career=__career,c=career.data,scene=__world.scene;
+ var equipment=['Плуг','Сеялка','Жатка','Разбрасыватель','Пропольник','Известкователь','Каток','Культиватор','Мульчирователь'];
+ var prices=[1200,1500,2200,1300,900,1400,1100,1300,1500];
+ var supply={seeds:{label:'Семена',price:300,x:-85,z:-34,tool:2,color:0xd5b86f},fertilizer:{label:'Удобрение',price:250,x:-91,z:-34,tool:4,color:0x8cae74},lime:{label:'Известь',price:300,x:-97,z:-34,tool:6,color:0xe4dcc3}};
+ var slots={jcb4cx:{x:-116,z:-14,heading:0},agrotech6150r:{x:-110,z:-14,heading:0},titan940:{x:-103,z:-14,heading:0}};
+ if(!c.fleet.pendingPickup||typeof c.fleet.pendingPickup!=='object'||Array.isArray(c.fleet.pendingPickup))c.fleet.pendingPickup={};
+ Object.keys(c.fleet.pendingPickup).forEach(function(k){if(!slots[k]||c.fleet.pendingPickup[k]!==true||!career.vehicleAvailable(k))delete c.fleet.pendingPickup[k];});
+ function nearShop(){var p=__tractor.pos;return Math.hypot(p.x+96,p.z+19)<=14;}
+ function nearLot(){var p=__tractor.pos;return Math.abs(p.x+96)<=34&&Math.abs(p.z+27)<=24;}
+ function stationary(){return Math.abs(__tractor.speed)<=.3;}
+ function ok(m){return {ok:true,message:m};}function no(m){return {ok:false,message:m};}
+ function purchaseSupply(k){var s=supply[k];if(!s)return no('Товар не найден.');if(!nearShop()||!stationary())return no('Остановись у агроцентра (−96, −19).');if(data.money<s.price)return no('Недостаточно денег: нужно '+s.price+' ₽.');if(data.shopStock[k]+100>100000)return no('На площадке слишком много этого товара.');farm.transact(-s.price,'supplies');data.shopStock[k]+=100;updatePallets();farm.markDirty();farm.save();return ok(s.label+': 100 ед. ждут на площадке выдачи.');}
+ function refill(k){var s=supply[k],t=__tractor;if(!s)return no('Товар не найден.');if(!stationary())return no('Остановись для загрузки.');if(Math.hypot(t.pos.x-s.x,t.pos.z-s.z)>9)return no('Подъедь к мешкам на площадке выдачи (−85…−97, −34).');if(data.tool!==s.tool)return no('Для загрузки присоедини орудие: '+equipment[s.tool-1]+'.');if(!data.shopStock[k])return no('На площадке нет товара. Сначала купи его в агроцентре.');var n=data.shopStock[k];data.shopStock[k]=0;data[k]+=n;farm.markDirty();updatePallets();farm.save();return ok('Загружено: '+s.label.toLowerCase()+' '+n+' ед.');}
+ function buyImplement(id){id=Number(id);if(!Number.isInteger(id)||id<1||id>9)return no('Орудие не найдено.');if(!nearShop()||!stationary())return no('Остановись у агроцентра (−96, −19).');if(data.implementsOwned[id-1])return no('Это орудие уже есть в хозяйстве.');var price=prices[id-1];if(data.money<price)return no('Недостаточно денег: нужно '+price+' ₽.');farm.transact(-price,'vehicles');data.implementsOwned[id-1]=true;data.implements[id-1]={x:-122+(id-1)*5,z:-25,heading:0};farm.refreshParked();farm.markDirty();farm.save();return ok('Куплено: '+equipment[id-1]+'. Орудие на площадке выдачи.');}
+ var pallets={};function createPallet(k){var d=supply[k],g=new THREE.Group();g.name='shop-pallet-'+k;var board=new THREE.MeshLambertMaterial({color:0x7d6448}),bag=new THREE.MeshLambertMaterial({color:d.color}),strap=new THREE.MeshLambertMaterial({color:0x615d51});function box(w,h,l,x,y,z,m){var o=new THREE.Mesh(new THREE.BoxGeometry(w,h,l),m);o.position.set(x,y,z);o.castShadow=true;g.add(o);}box(1.5,.16,1.25,0,.1,0,board);box(1.16,1.1,1,0,.74,0,bag);box(1.18,.07,1.02,0,1.14,0,strap);g.position.set(d.x,Village.surfaceHeightAt(d.x,d.z),d.z);scene.add(g);return g;}
+ Object.keys(supply).forEach(function(k){pallets[k]=createPallet(k);});function updatePallets(){Object.keys(supply).forEach(function(k){pallets[k].visible=data.shopStock[k]>0;});}updatePallets();
+ var parkedVehicles={};
+ function syncVehicles(){Object.keys(slots).forEach(function(id){var pending=!!c.fleet.pendingPickup[id]&&career.vehicleAvailable(id),g=parkedVehicles[id];if(pending&&!g){var entry=__world.vehicleRegistry.filter(function(e){return e.id===id;})[0];if(entry){try{g=entry.build().group;g.name='shop-vehicle-'+id;scene.add(g);parkedVehicles[id]=g;}catch(e){console.warn('Не удалось показать машину в магазине',e);}}}if(g){var p=slots[id];g.visible=pending;g.position.set(p.x,Village.surfaceHeightAt(p.x,p.z),p.z);g.rotation.y=p.heading;}});}
+ function deliverVehicle(id){if(!slots[id])return;c.fleet.pendingPickup[id]=true;syncVehicles();farm.markDirty();}
+ function pickupVehicle(id){if(!slots[id]||!c.fleet.pendingPickup[id])return;var p=slots[id];__tractor.pos.set(p.x,Village.surfaceHeightAt(p.x,p.z),p.z);__tractor.heading=p.heading;delete c.fleet.pendingPickup[id];syncVehicles();farm.markDirty();}
+ syncVehicles();
+ var open=document.createElement('button');open.id='shop-open';open.type='button';open.textContent='Агроцентр';open.style.display='none';document.body.appendChild(open);
+ var overlay=document.createElement('div');overlay.id='shop-panel';overlay.hidden=true;overlay.setAttribute('role','dialog');overlay.setAttribute('aria-label','Агроцентр');overlay.setAttribute('aria-modal','true');overlay.innerHTML='<div class="shop-shell"><header class="shop-header"><div><span class="section-kicker">БЕРЁЗОВКА / ТОРГОВЫЙ ЦЕНТР</span><strong>Агроцентр</strong></div><div class="shop-header-right"><span id="shop-balance"></span><button id="shop-close" type="button">✕ В игру</button></div></header><nav class="shop-tabs" aria-label="Разделы магазина"><button data-shop-tab="vehicles">Техника</button><button data-shop-tab="implements">Орудия</button><button data-shop-tab="supplies">Расходники</button></nav><main class="shop-content"><div id="shop-body"></div><div id="shop-message" role="status"></div></main></div>';document.body.appendChild(overlay);
+ var tab='vehicles',body=overlay.querySelector('#shop-body'),message=overlay.querySelector('#shop-message');
+ function makeButton(kind,id,text){return '<button type="button" data-shop-action="'+kind+'" data-id="'+id+'">'+text+'</button>';}
+ function draw(){if(overlay.hidden)return;overlay.querySelector('#shop-balance').textContent='Баланс · '+Math.floor(data.money).toLocaleString('ru-RU')+' ₽';overlay.querySelectorAll('[data-shop-tab]').forEach(function(b){var active=b.dataset.shopTab===tab;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});var h='';
+  if(tab==='vehicles'){var a=[['jcb4cx','JCB 4CX',8500],['agrotech6150r','Agrotech 6150R',7000],['titan940','Titan 940',12000]];h='<div class="shop-intro"><span class="section-kicker">ПЛОЩАДКА ВЫДАЧИ</span><h2>Машины и аренда</h2><p>Купленные и арендованные машины появляются на парковке. Для посадки выбери их в гараже — перенос пока осуществляется автоматически.</p></div><div class="shop-grid">';a.forEach(function(v){var status=career.vehicleStatus(v[0]);h+='<article class="shop-product"><span class="shop-product-icon">▰</span><div><span class="section-kicker">АВТОПАРК</span><h3>'+v[1]+'</h3><p>'+status+(c.fleet.pendingPickup[v[0]]?' · ожидает на парковке':'')+'</p><strong>'+v[2].toLocaleString('ru-RU')+' ₽</strong></div><div class="shop-actions">'+makeButton('buy-vehicle',v[0],'Купить')+makeButton('rent-vehicle',v[0],'Аренда · '+Math.ceil(v[2]*.15)+' ₽')+'</div></article>';});h+='</div>';}
+  if(tab==='implements'){h='<div class="shop-intro"><span class="section-kicker">НАВЕСНОЕ ОБОРУДОВАНИЕ</span><h2>Орудия</h2><p>Покупки появляются на площадке у агроцентра. Подъедь задней навеской и нажми ⇄ / I. По одному орудию каждого вида.</p></div><div class="shop-grid">';equipment.forEach(function(name,i){h+='<article class="shop-product compact"><div><span class="section-kicker">ОРУДИЕ / '+String(i+1).padStart(2,'0')+'</span><h3>'+name+'</h3><p>'+(data.implementsOwned[i]?'Уже в хозяйстве':'На площадке после покупки')+'</p><strong>'+prices[i].toLocaleString('ru-RU')+' ₽</strong></div><div class="shop-actions">'+makeButton('buy-tool',i+1,data.implementsOwned[i]?'Уже куплено':'Купить')+'</div></article>';});h+='</div>';}
+  if(tab==='supplies'){h='<div class="shop-intro"><span class="section-kicker">МЕШКИ НА ПАЛЛЕТАХ</span><h2>Расходники</h2><p>Купленные мешки остаются на площадке. Подъедь с подходящим орудием к его мешку и нажми «Загрузить». Перенос паллет погрузчиком пока не поддерживается.</p></div><div class="shop-grid">';Object.keys(supply).forEach(function(k){var v=supply[k];h+='<article class="shop-product compact"><div><span class="section-kicker">100 ЕДИНИЦ</span><h3>'+v.label+'</h3><p>На площадке: '+data.shopStock[k]+' · необходимо: '+equipment[v.tool-1]+'</p><strong>'+v.price+' ₽</strong></div><div class="shop-actions">'+makeButton('buy-supply',k,'Купить')+makeButton('refill',k,'Загрузить')+'</div></article>';});h+='</div>';}
+  body.innerHTML=h;
+ }
+ function announce(r){message.textContent=r.message;message.classList.toggle('error',!r.ok);message.classList.toggle('success',r.ok);farm.say(r.message);return r;}
+ overlay.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.shopTab){tab=b.dataset.shopTab;message.textContent='';overlay.querySelector('.shop-content').scrollTop=0;draw();return;}var a=b.dataset.shopAction,id=b.dataset.id,r;if(a==='buy-vehicle')r=career.fleetTrade('buy',id);if(a==='rent-vehicle')r=career.fleetTrade('rent',id);if(a==='buy-tool')r=buyImplement(id);if(a==='buy-supply')r=purchaseSupply(id);if(a==='refill')r=refill(id);if(r){announce(r);farm.save();draw();}});
+ function close(){overlay.hidden=true;}overlay.querySelector('#shop-close').onclick=close;open.onclick=function(){if(!nearLot())return;if(window.GameInput)GameInput.clearControls();overlay.hidden=false;message.textContent='';draw();};
+ window.addEventListener('keydown',function(e){if(overlay.hidden)return;if(e.code==='Escape'){e.preventDefault();e.stopImmediatePropagation();close();return;}if(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','ShiftLeft','ShiftRight','KeyQ','KeyX','KeyC','Digit1','Digit2','Digit3','KeyF','KeyG','KeyR','KeyT','KeyH','KeyP','KeyI','KeyM','KeyK','KeyU','KeyB'].includes(e.code))e.stopImmediatePropagation();},true);
+ var started=false;document.querySelector('#btn-start').addEventListener('click',function(){started=true;});setInterval(function(){open.style.display=started&&nearLot()?'block':'none';syncVehicles();},700);
+ window.__shop={purchaseSupply:purchaseSupply,refill:refill,buyImplement:buyImplement,deliverVehicle:deliverVehicle,pickupVehicle:pickupVehicle,refresh:syncVehicles,open:function(){open.click();},purchaseFromFarm:function(k){var r=purchaseSupply(k);announce(r);if(!r.ok)farm.say(r.message);}};
+})();
+
+</script>
+<script>
 /* Новая карьера создаётся до инициализации мира через обычное сохранение. */
 (function(){
  'use strict';
@@ -10240,7 +10284,7 @@ window.addEventListener('keydown',function(e){
   if(page<3){page++;show();return;}
   if(hasSave()&&!overwriteConfirm){overwriteConfirm=true;message.textContent='Новая карьера заменит текущее сохранение. Нажми кнопку ещё раз для подтверждения.';document.getElementById('setup-next').textContent='Подтвердить замену';return;}
   var m=modes[preset.value],N=64*80;
-  var data={money:m.money,grain:0,cells:Array(N).fill(0),planted:Array(N).fill(0),angles:Array(N).fill(0),tool:0,seeds:m.seeds,fertilizer:m.fertilizer,wear:0,land:{},career:{preset:preset.value,fleet:{owned:{mtz82:true},rented:{}},loan:m.loan,economyMultiplier:m.multiplier,month:8,year:1,day:1,daysPerMonth:Number(document.getElementById('setup-days').value),seasonal:document.getElementById('setup-seasonal').checked,weedsEnabled:document.getElementById('setup-weeds').checked,limeEnabled:document.getElementById('setup-lime').checked,plowingEnabled:document.getElementById('setup-plowing').checked,weatherRules:document.getElementById('setup-weather').checked,cropDamage:document.getElementById('setup-crop-damage').checked,fuelUsage:document.getElementById('setup-fuel').value,autosaveSec:Number(document.getElementById('setup-autosave').value),dayMinutes:630}};
+  var data={implementsOwned:[true,true,true,false,false,false,false,false,false],money:m.money,grain:0,cells:Array(N).fill(0),planted:Array(N).fill(0),angles:Array(N).fill(0),tool:0,seeds:m.seeds,fertilizer:m.fertilizer,wear:0,land:{},career:{preset:preset.value,fleet:{owned:{mtz82:true},rented:{}},loan:m.loan,economyMultiplier:m.multiplier,month:8,year:1,day:1,daysPerMonth:Number(document.getElementById('setup-days').value),seasonal:document.getElementById('setup-seasonal').checked,weedsEnabled:document.getElementById('setup-weeds').checked,limeEnabled:document.getElementById('setup-lime').checked,plowingEnabled:document.getElementById('setup-plowing').checked,weatherRules:document.getElementById('setup-weather').checked,cropDamage:document.getElementById('setup-crop-damage').checked,fuelUsage:document.getElementById('setup-fuel').value,autosaveSec:Number(document.getElementById('setup-autosave').value),dayMinutes:630}};
   try{
    var settings={};try{settings=JSON.parse(localStorage.getItem(SKEY))||{};}catch(e){}
    settings.daySpeed=document.getElementById('setup-speed').value;settings.quality=document.getElementById('menu-quality').value;
