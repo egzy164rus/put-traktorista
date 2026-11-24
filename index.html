@@ -760,6 +760,7 @@ html {-webkit-text-size-adjust:100%;text-size-adjust:100%}
 #shop-panel{position:fixed;inset:0;z-index:220;color:#edf4e8;background:#101b19;font:14px/1.45 system-ui}#shop-panel[hidden]{display:none!important}.shop-shell{height:100%;display:flex;flex-direction:column;background:radial-gradient(ellipse at 90% 0%,#334d3b99,transparent 50%),linear-gradient(145deg,#1b2b27,#101b1a)}.shop-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px clamp(16px,3vw,34px);background:#101b19;border-bottom:1px solid #ffffff20}.shop-header strong{display:block;font-size:21px;color:#f5f7ef}.shop-header-right{display:flex;align-items:center;gap:16px;white-space:nowrap}#shop-balance{font-size:13px;color:#c9dbbf}#shop-close{background:#c3dc7e;color:#18281c;border:0;border-radius:5px;padding:10px 14px;font-weight:700}.shop-tabs{display:flex;gap:7px;padding:12px clamp(16px,3vw,34px);border-bottom:1px solid #ffffff1c;overflow:auto}.shop-tabs button,.shop-actions button{white-space:nowrap;border:1px solid #739070;background:#30483a;color:#edf4eb;border-radius:5px;padding:9px 12px;font:650 13px system-ui;cursor:pointer}.shop-tabs button.active{background:#c1dc7c;color:#17291b;border-color:#c1dc7c}.shop-content{flex:1;min-height:0;overflow:auto;padding:20px clamp(16px,3vw,34px)}#shop-body{max-width:1200px}.shop-intro{padding:16px 20px;background:linear-gradient(110deg,#324c37,#1d332b);border:1px solid #8ca98455;border-radius:6px}.shop-intro h2{font-size:22px;margin:3px 0;color:#f4f8ee}.shop-intro p{max-width:90ch;margin:3px 0;color:#c8d9c9;font-size:12px}.shop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:9px;margin-top:12px}.shop-product{display:flex;flex-direction:column;gap:10px;padding:15px;border:1px solid #718c7c55;border-radius:6px;background:#253a31}.shop-product-icon{color:#d3e69e;font-size:20px}.shop-product h3{margin:3px 0;color:#f4f8ed}.shop-product p{font-size:12px;color:#bacdbb;margin:4px 0}.shop-product strong{color:#d7eca2}.shop-actions{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto}.shop-actions button{font-size:12px}#shop-message{position:sticky;bottom:0;margin:10px 0 0;padding:9px 12px;border-radius:5px;background:#293e2d;border:1px solid #9bc17a;color:#e6f6d0}#shop-message.error{background:#4a3326;border-color:#c6976d;color:#ffe4c0}#shop-message:empty{display:none}
 @media(max-height:500px){#shop-open{top:91px;bottom:auto;left:auto;right:10px;padding:7px}.shop-header{padding:6px 15px}.shop-header strong{font-size:16px}.shop-tabs{padding:6px 15px}.shop-tabs button{padding:6px 10px}.shop-content{padding:10px 15px}.shop-intro{padding:10px 13px}.shop-intro h2{font-size:18px}.shop-product{padding:10px}.shop-grid{margin-top:7px;gap:6px}.shop-product-icon{display:none}}
 @media(max-width:450px){#shop-balance{display:none}.shop-grid{grid-template-columns:1fr}}
+.map-select-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.map-choice{text-align:left;background:#1d3028;border:1px solid #718a75;border-radius:5px;color:#e9f1e5;padding:10px 13px;cursor:pointer}.map-choice.active{background:#3b5537;border-color:#d1e89a;box-shadow:inset 3px 0 #d1e89a}.map-choice b,.map-choice small{display:block}.map-choice small{font-size:11px;color:#bcd0ba;margin-top:4px}@media(max-height:500px){.map-select-cards{margin-top:6px}.map-choice{padding:6px 9px}.map-choice small{font-size:10px;margin:1px 0}}@media(max-width:480px){.map-select-cards{grid-template-columns:1fr}}
 
 </style>
 </head>
@@ -1028,7 +1029,7 @@ html {-webkit-text-size-adjust:100%;text-size-adjust:100%}
           </div>
         </div>
         <div id="setup-page-2" class="setup-page" hidden>
-          <div class="setup-map-card"><div><span>ДОСТУПНАЯ КАРТА / 01</span><strong>Берёзовка</strong><small>Российская деревня · ферма · река · 18 полей</small></div><em>Иллюстрация · графика игры отличается</em></div><p class="setup-map-caption">Единственная доступная карта · другие карты пока не добавлены</p>
+          <div class="setup-map-card"><div><span>НОВАЯ КАРТА / 01</span><strong>Заречный край</strong><small>Большая территория · деревни · поля · элеваторы</small></div><em>Собственная карта по мотивам русских карт FS22 · иллюстрация</em></div><div class="map-select-cards"><button type="button" class="map-choice active" data-map="zarechye" aria-pressed="true"><b>Заречный край</b><small>1 200 × 1 200 м · 38 полей · новая карта</small></button><button type="button" class="map-choice" data-map="berezovka" aria-pressed="false"><b>Берёзовка</b><small>520 × 520 м · 18 полей · прежняя карта</small></button></div><p class="setup-map-caption">Выберите карту для новой карьеры. На большой карте центральное хозяйство и агроцентр сохранены, а окрестности расширены.</p>
         </div>
         <div id="setup-page-3" class="setup-page" hidden>
           <div class="setup-scroll-hint">↕ Прокрутите настройки, чтобы увидеть все параметры</div>
@@ -2812,6 +2813,10 @@ window.TrackMarks = (function () {
 /* ===== Рельеф полигона и декорации ===== */
 window.Terrain = (function () {
   'use strict';
+  // Выбор карты читается до построения ландшафта. Предыдущий формат карьеры удаляется по запросу игрока.
+  try{localStorage.removeItem('put_traktorista_farm_v1');}catch(e){}
+  var selectedMap='zarechye';try{var initial=JSON.parse(localStorage.getItem('put_traktorista_farm_v2'));if(initial&&initial.career&&initial.career.map==='berezovka')selectedMap='berezovka';}catch(e){}
+  window.__mapId=selectedMap;window.__mapHalf=selectedMap==='zarechye'?600:260;
 
   /* Высотная функция — ЕДИНЫЙ ИСТОЧНИК для меша и физики */
   function baseHeightAt(x, z) {
@@ -2829,7 +2834,7 @@ window.Terrain = (function () {
 
   // Ограниченная опытная площадка с редактируемой сеткой и общей высотой для колёс.
   const EX=40,EZ=20,ES=12,EN=40,STEP=ES/EN;let savedEarth=null,earthMesh=null,earthBase=null;
-  try{const stored=JSON.parse(localStorage.getItem('put_traktorista_farm_v1'));if(stored&&stored.earth)savedEarth=stored.earth;}catch(_){}
+  try{const stored=JSON.parse(localStorage.getItem('put_traktorista_farm_v2'));if(stored&&stored.earth)savedEarth=stored.earth;}catch(_){}
   const earth={grid:Array.isArray(savedEarth&&savedEarth.grid)&&savedEarth.grid.length===(EN+1)*(EN+1)?savedEarth.grid.map(v=>Number.isFinite(v)?Math.max(-1.2,Math.min(1.2,v)):0):Array((EN+1)*(EN+1)).fill(0),bucket:Number.isFinite(savedEarth&&savedEarth.bucket)?Math.max(0,Math.min(.4,savedEarth.bucket)):0};
   function sampleEarth(x,z){let fx=(x-(EX-ES/2))/STEP,fz=(z-(EZ-ES/2))/STEP;if(fx<0||fz<0||fx>EN||fz>EN)return 0;
     let a=Math.min(EN-1,Math.floor(fx)),b=Math.min(EN-1,Math.floor(fz)),u=fx-a,v=fz-b,n=EN+1;
@@ -2884,7 +2889,7 @@ window.Terrain = (function () {
 
   function build(scene, isLowQuality) {
     /* --- Земля с вершинной окраской и нормаль-картой --- */
-    const SIZE = 520, SEG = isLowQuality ? 144 : 240;
+    const SIZE = window.__mapHalf*2, SEG = window.__mapId==='zarechye' ? (isLowQuality ? 240 : 360) : (isLowQuality ? 144 : 240);
     const geo = new THREE.PlaneGeometry(SIZE, SIZE, SEG, SEG);
     geo.rotateX(-Math.PI / 2);
     const pos = geo.attributes.position;
@@ -6762,10 +6767,10 @@ window.Village = (function () {
   /* ---------- Речка с мостом ---------- */
   function riverZ(x) { return -46 + Math.sin(x * 0.011) * 7; }
   function makeRiver() {
-    var SEG = 80, W = 5.2;
+    var SEG = window.__mapId==='zarechye'?180:80, W = 5.2, R=window.__mapHalf+10;
     var positions = [], uvs = [], indices = [];
     for (var i = 0; i <= SEG; i++) {
-      var x = -270 + (540 * i) / SEG;
+      var x = -R + (2*R * i) / SEG;
       var zc = riverZ(x);
       var dz = (riverZ(x + 1) - riverZ(x - 1)) / 2;
       var ang = Math.atan(dz);
@@ -6785,7 +6790,7 @@ window.Village = (function () {
     /* ложе русла — чуть темнее и шире, чтобы вода читалась как река, а не как «стекло» */
     var bedPos = [];
     for (var bi = 0; bi <= SEG; bi++) {
-      var bx = -270 + (540 * bi) / SEG, bzc = riverZ(bx);
+      var bx = -R + (2*R * bi) / SEG, bzc = riverZ(bx);
       var bdz = (riverZ(bx + 1) - riverZ(bx - 1)) / 2;
       var bang = Math.atan(bdz), bnx = Math.cos(bang), bnz = -Math.sin(bang);
       var bw = W * 1.5;
@@ -6921,6 +6926,16 @@ window.Village = (function () {
     {x:165,z:-170,w:38,d:25,angle:.10,kind:0},
     {x:90,z:176,w:43,d:30,angle:-.12,kind:1}
   ];
+  if(window.__mapId==='zarechye'){
+    // Новые районы соединены с центральной дорогой; все участки входят в обычную систему полей.
+    countryRoutes.push([[13,76],[20,145],[35,210],[45,270],[45,330]]);
+    countryRoutes.push([[45,330],[-50,330],[-150,330],[-250,330],[-350,330],[-450,330],[-520,330]]);
+    countryRoutes.push([[45,330],[130,330],[220,330],[310,330],[405,330],[520,330]]);
+    countryRoutes.push([[35,-120],[45,-180],[45,-250],[45,-330]]);
+    countryRoutes.push([[45,-330],[-50,-330],[-150,-330],[-250,-330],[-350,-330],[-450,-330],[-520,-330]]);
+    countryRoutes.push([[45,-330],[130,-330],[220,-330],[310,-330],[405,-330],[520,-330]]);
+    [-430,-235,-40,155,350].forEach(function(x,i){[-440,-220,220,440].forEach(function(z,j){decorativeFields.push({x:x,z:z,w:116,d:76,angle:(i%2?-.055:.045),kind:(i+j)%3});});});
+  }
   // Непрерывное полотно дорог: асфальтовый тракт и грунтовые подъезды.
   // Маршруты общие с картой, координаты полей и объектов не меняются.
   function roadDistance(x,z){var min=Infinity;countryRoutes.forEach(function(r){for(var i=1;i<r.length;i++){var a=r[i-1],b=r[i],dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz,t=l?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/l)):0;min=Math.min(min,Math.hypot(x-a[0]-t*dx,z-a[1]-t*dz));}});return min;}
@@ -7032,6 +7047,7 @@ window.Village = (function () {
   function forestBelts(){
     var positions=[];function addLine(x1,z1,x2,z2,n){for(var i=0;i<n;i++){var t=i/(n-1),j=Math.sin(i*12.9)*1.8;positions.push([x1+(x2-x1)*t+j,z1+(z2-z1)*t+Math.cos(i*7.8)*1.3]);}}
     addLine(-202,-160,-190,-65,19);addLine(-205,128,-183,196,16);addLine(188,-148,203,-55,20);addLine(80,203,170,203,19);addLine(-12,-205,70,-202,18);
+    if(window.__mapId==='zarechye'){addLine(-525,-510,-525,-370,26);addLine(515,-510,515,-370,26);addLine(-525,380,-525,520,26);addLine(515,380,515,520,26);addLine(-130,480,70,490,30);addLine(235,-500,440,-510,30);addLine(-135,165,65,164,24);}
     var trunk=new THREE.InstancedMesh(new THREE.CylinderGeometry(.12,.21,1,7),new THREE.MeshLambertMaterial({color:0x655744}),positions.length);
     var crowns=new THREE.InstancedMesh(new THREE.ConeGeometry(1,1,7),new THREE.MeshLambertMaterial({color:0x4a6741}),positions.length);
     var o=new THREE.Object3D();positions.forEach(function(p,i){var h=4.8+(i%5)*.32,y=H(p[0],p[1]);o.position.set(p[0],y+h*.29,p[1]);o.scale.set(1,h*.58,1);o.updateMatrix();trunk.setMatrixAt(i,o.matrix);
@@ -7048,6 +7064,13 @@ window.Village = (function () {
     scene.add(farmBuilding(70,-87,11,7,'СКЛАД','farm-storage'));
     scene.add(roadsideSign(67,-102,'ФЕРМА','склад и мастерская',0));
     scene.add(dealerLot());
+    if(window.__mapId==='zarechye'){
+      // Две деревни, дорожные ориентиры и отдельный пункт приёма зерна.
+      [[-470,308],[-450,308],[-430,308],[-410,308],[-470,352],[-450,352],[-430,352],[-410,352],[270,-308],[290,-308],[310,-308],[330,-308],[270,-352],[290,-352],[310,-352],[330,-352]].forEach(function(p,i){scene.add(makeHouse(p[0],p[1],i<4||i>=8&&i<12?0:Math.PI,{variant:i%3,roof:i%2?0x51423a:0x39424a}));});
+      scene.add(roadsideSign(-490,320,'СОСНОВКА','деревня',0));scene.add(roadsideSign(250,-320,'ЛУГОВОЕ','село',0));
+      scene.add(yardSurface(405,330,32,26,'regional-grain-yard'));scene.add(makeElevator(405,330,0));scene.add(roadsideSign(386,315,'ЗЕРНОПУНКТ','приём урожая',0));
+      [[-488,320],[-425,320],[260,-320],[320,-320],[385,320]].forEach(function(p){scene.add(makeLamp(p[0],p[1]));});
+    }
     [[-48,36],[-85,44],[-103,8],[-121,51],[-151,62],[-159,90]].forEach(function(p){scene.add(vegetableGarden(p[0],p[1]));});
     scene.add(forestBelts());
     scene.add(makeLamp(-113,19));scene.add(makeLamp(-135,60));
@@ -8078,6 +8101,7 @@ window.DayCycle = (function () {
     // позиция
     S.pos.x += Math.sin(S.heading) * S.speed * dt;
     S.pos.z += Math.cos(S.heading) * S.speed * dt;
+    var bound=window.__mapHalf-4;if(Math.abs(S.pos.x)>bound||Math.abs(S.pos.z)>bound){S.pos.x=clamp(S.pos.x,-bound,bound);S.pos.z=clamp(S.pos.z,-bound,bound);S.speed=0;}
     S.pos.y = hCenter;
     S.odometer += Math.abs(S.speed) * dt;
 
@@ -8727,7 +8751,7 @@ window.addEventListener('keydown',function(e){
   'use strict';
   if (!window.__world || !window.__tractor) return;
   var N = 64, M = 80, W = 46, D = 64, FX = 24, FZ = 92, ANG = 0.3;
-  var KEY = 'put_traktorista_farm_v1', count = N * M;
+  var KEY = 'put_traktorista_farm_v2', count = N * M;
   var data = { money:5000, grain:0, cells:Array(count).fill(0), planted:Array(count).fill(0), angles:Array(count).fill(0), tool:0 };
   try {
     var saved = JSON.parse(localStorage.getItem(KEY));
@@ -8747,7 +8771,7 @@ window.addEventListener('keydown',function(e){
   } catch (_) {}
   // У каждого орудия сохраняется место, где его оставили. Старые сохранения сохраняют прицеплённый инструмент.
   var defaultToolSpots=Array.from({length:9},function(_,i){return {x:20+i*4.5,z:-14,heading:0};});
-  data.implements=defaultToolSpots.map(function(pos,i){var old=saved&&Array.isArray(saved.implements)&&saved.implements[i];return old&&Number.isFinite(old.x)&&Number.isFinite(old.z)&&Number.isFinite(old.heading)&&Math.abs(old.x)<300&&Math.abs(old.z)<300?{x:old.x,z:old.z,heading:old.heading}:pos;});
+  data.implements=defaultToolSpots.map(function(pos,i){var old=saved&&Array.isArray(saved.implements)&&saved.implements[i];return old&&Number.isFinite(old.x)&&Number.isFinite(old.z)&&Number.isFinite(old.heading)&&Math.abs(old.x)<=window.__mapHalf&&Math.abs(old.z)<=window.__mapHalf?{x:old.x,z:old.z,heading:old.heading}:pos;});
   data.implementsOwned=Array.isArray(saved&&saved.implementsOwned)&&saved.implementsOwned.length===9?saved.implementsOwned.map(function(x){return x===true;}):Array(9).fill(true);if(data.tool>0)data.implementsOwned[data.tool-1]=true;
   data.shopStock={seeds:0,fertilizer:0,lime:0};if(saved&&saved.shopStock&&typeof saved.shopStock==='object')Object.keys(data.shopStock).forEach(function(k){var n=saved.shopStock[k];data.shopStock[k]=Number.isFinite(n)?Math.max(0,Math.min(100000,Math.floor(n))):0;});
   // Старые сохранения продолжают работать: новый прицеп и заказ добавляются отдельно.
@@ -8796,6 +8820,7 @@ window.addEventListener('keydown',function(e){
 
 
   if(saved&&Number.isFinite(saved.fuel))window.__tractor.fuel=Math.max(0,Math.min(100,saved.fuel));
+  if(saved&&saved.player&&Number.isFinite(saved.player.x)&&Number.isFinite(saved.player.z)&&Number.isFinite(saved.player.heading)&&Math.abs(saved.player.x)<window.__mapHalf-3&&Math.abs(saved.player.z)<window.__mapHalf-3){window.__tractor.pos.set(saved.player.x,Village.surfaceHeightAt(saved.player.x,saved.player.z),saved.player.z);window.__tractor.heading=saved.player.heading;}
   var tr = saved && saved.trailer;
   data.trailer = tr && Number.isFinite(tr.x) && Number.isFinite(tr.z) ? {
     x:tr.x, z:tr.z, heading:Number.isFinite(tr.heading)?tr.heading:0,
@@ -8923,7 +8948,7 @@ window.addEventListener('keydown',function(e){
   var status=root.querySelector('#farm-status'), message=root.querySelector('#farm-message');
   var dirty=false,lastSave=0,lastUi='',lastMove=null,passHeading=null,model=null,oldVehicle=null,lastSavedFuel=window.__tractor.fuel,saveSuspended=false;
   var dirtyCells=new Set();
-  function save(){if(saveSuspended)return false;try{if(window.__career)window.__career.saveClock();data.fuel=window.__tractor.fuel;localStorage.setItem(KEY,JSON.stringify(data));lastSavedFuel=data.fuel;dirty=false;lastSave=0;return true;}catch(e){ message.textContent='Не удалось сохранить прогресс в браузере.';return false; }}
+  function save(){if(saveSuspended)return false;try{if(window.__career)window.__career.saveClock();data.fuel=window.__tractor.fuel;data.player={x:window.__tractor.pos.x,z:window.__tractor.pos.z,heading:window.__tractor.heading};localStorage.setItem(KEY,JSON.stringify(data));lastSavedFuel=data.fuel;dirty=false;lastSave=0;return true;}catch(e){ message.textContent='Не удалось сохранить прогресс в браузере.';return false; }}
   function paint(changedCells){
     var cw=canvas.width/N,ch=canvas.height/M;
     for(var j=0;j<M;j++) for(var i=0;i<N;i++){
@@ -9015,7 +9040,8 @@ window.addEventListener('keydown',function(e){
     var site=null;
     if(Math.hypot(tr.x-80,tr.z-58)<=18&&distance(80,58)<=24)site='elevator';
     else if(Math.hypot(tr.x+96,tr.z+19)<=18&&distance(-96,-19)<=24)site='store';
-    if(!site){say('Доставь прицеп к элеватору или агромагазину.');return;}
+    else if(window.__mapId==='zarechye'&&Math.hypot(tr.x-405,tr.z-330)<=18&&distance(405,330)<=24)site='regional';
+    if(!site){say('Доставь прицеп к элеватору, агроцентру или региональному зернопункту.');return;}
     if(tr.cargo<=0){say('В прицепе нет урожая. Загрузить его можно у прицепа.');return;}
     var crop=Number.isInteger(tr.crop)?tr.crop:0,rate=window.__career?window.__career.grainPrice(site,crop):8;
     var amount=tr.cargo,earned=amount*rate;unloadCargo=amount;tr.cargo=0;tr.crop=null;transact(earned,'sales');tipTime=3;
@@ -9775,7 +9801,7 @@ window.addEventListener('keydown',function(e){
   kind=['plow','sow','fertilize','harvest','cultivate','weed','lime','roll','mulch','transport'].includes(kind)?kind:'plow';
   if(c.contract&&c.contract.active)return no('Сначала закончи или отмени текущий контракт.');
   if(kind==='transport'){c.contract={active:true,kind:'transport',field:null,progress:0,target:1500,reward:2400,stock:1500,delivered:0};return ok('Доставка принята: забери 1500 ед. у агромагазина и доставь на ферму. Нужны два рейса прицепа.');}
-  var id=-1;for(var i=0;i<land.defs.length;i++)if(!land.state(i)){id=i;break;}
+  var id=-1,best=Infinity;for(var i=0;i<land.defs.length;i++)if(!land.state(i)){if(window.__mapId!=='zarechye'){id=i;break;}var df=land.defs[i],dist=Math.hypot(df.x-window.__tractor.pos.x,df.z-window.__tractor.pos.z);if(dist<best){best=dist;id=i;}}
   if(id<0)return no('Свободных соседских полей нет.');
   c.contract={active:true,field:id,kind:kind,progress:0,target:100,reward:({sow:1800,fertilize:1700,harvest:2200,cultivate:1200,plow:1400,weed:1500,lime:1600,roll:1300,mulch:1400})[kind]};
   if(kind==='harvest'){c.contract.deliveryMode=true;c.contract.stock=0;c.contract.delivered=0;c.contract.deliveryTarget=1000;}
@@ -9835,7 +9861,7 @@ window.addEventListener('keydown',function(e){
  function sell(k){var prices=productPrices;if(!(k in prices))return no('Этот продукт нельзя продать.');
   var p=window.__tractor.pos;if(Math.hypot(p.x-80,p.z-58)>24)return no('Для продажи продукции подъедь к элеватору.');
   var n=Math.floor(c[k]);if(n<1)return no('Продукции нет.');c[k]-=n;var money=n*Math.round(prices[k]*c.economyMultiplier);farm.transact(money,'sales');return ok('Продано '+n+' ед. за '+money+' ₽.');}
- function grainPriceAt(site,phase,crop){var factor=[1,.9,1.5,1,1.35,1.4][Number.isInteger(crop)&&crop>=0&&crop<6?crop:0];return Math.max(1,Math.round((site==='store'?[7,8,9,10,8]:[8,9,10,7,8])[phase%5]*factor*c.economyMultiplier));}
+ function grainPriceAt(site,phase,crop){var factor=[1,.9,1.5,1,1.35,1.4][Number.isInteger(crop)&&crop>=0&&crop<6?crop:0];return Math.max(1,Math.round((site==='regional'?[9,11,8,9,10]:site==='store'?[7,8,9,10,8]:[8,9,10,7,8])[phase%5]*factor*c.economyMultiplier));}
  function grainPrice(site,crop){return grainPriceAt(site,Math.floor(c.marketClock/30)%5,crop);}
  function tick(dt){
   updateWeatherVisual(dt);c.marketClock=(c.marketClock+dt)%150;
@@ -9852,7 +9878,7 @@ window.addEventListener('keydown',function(e){
   if(active||Math.floor(c.marketClock)%5===0)farm.markDirty();
  }
  var panel=document.createElement('div');panel.id='career-panel';panel.hidden=true;panel.setAttribute('role','dialog');panel.setAttribute('aria-label','Карьера');panel.setAttribute('aria-modal','true');
- panel.innerHTML='<div class="career-shell"><header class="career-head"><div><span class="career-eyebrow">ПУТЬ ТРАКТОРИСТА / БЕРЁЗОВКА</span><strong>Управление хозяйством</strong></div><div class="career-head-right"><span id="career-balance"></span><button id="career-close" type="button" aria-label="Закрыть меню">✕ <span>В игру</span></button></div></header><div class="career-layout"><nav class="career-nav"><div class="career-nav-label">МЕНЮ КАРЬЕРЫ</div><div class="career-tabs"><button data-tab="contracts"><i>01</i> Контракт</button><button data-tab="finance"><i>02</i> Банк</button><button data-tab="market"><i>03</i> Рынок</button><button data-tab="calendar"><i>04</i> Календарь</button><button data-tab="production"><i>05</i> Хозяйство</button><button data-tab="helper"><i>06</i> Помощник</button><button data-tab="soil"><i>07</i> Почва</button><button data-tab="fields"><i>08</i> Поля</button><button data-tab="vehicles"><i>09</i> Техника</button><button data-tab="goals"><i>10</i> Цели</button></div><div class="career-nav-foot">↕ Прокрутите разделы<br>Игра продолжается</div></nav><main class="career-main"><div class="career-main-heading"><div><span class="career-eyebrow">БЕРЁЗОВКА / КАРЬЕРА</span><h2 id="career-page-title">Контракт</h2></div><span id="career-date"></span></div><div id="career-body"></div><div id="career-message" role="status"></div></main></div></div>';document.body.appendChild(panel);
+ panel.innerHTML='<div class="career-shell"><header class="career-head"><div><span class="career-eyebrow">ПУТЬ ТРАКТОРИСТА / БЕРЁЗОВКА</span><strong>Управление хозяйством</strong></div><div class="career-head-right"><span id="career-balance"></span><button id="career-close" type="button" aria-label="Закрыть меню">✕ <span>В игру</span></button></div></header><div class="career-layout"><nav class="career-nav"><div class="career-nav-label">МЕНЮ КАРЬЕРЫ</div><div class="career-tabs"><button data-tab="contracts"><i>01</i> Контракт</button><button data-tab="finance"><i>02</i> Банк</button><button data-tab="market"><i>03</i> Рынок</button><button data-tab="calendar"><i>04</i> Календарь</button><button data-tab="production"><i>05</i> Хозяйство</button><button data-tab="helper"><i>06</i> Помощник</button><button data-tab="soil"><i>07</i> Почва</button><button data-tab="fields"><i>08</i> Поля</button><button data-tab="vehicles"><i>09</i> Техника</button><button data-tab="goals"><i>10</i> Цели</button></div><div class="career-nav-foot">↕ Прокрутите разделы<br>Игра продолжается</div></nav><main class="career-main"><div class="career-main-heading"><div><span class="career-eyebrow">БЕРЁЗОВКА / КАРЬЕРА</span><h2 id="career-page-title">Контракт</h2></div><span id="career-date"></span></div><div id="career-body"></div><div id="career-message" role="status"></div></main></div></div>';if(window.__mapId==='zarechye')panel.innerHTML=panel.innerHTML.replaceAll('БЕРЁЗОВКА','ЗАРЕЧНЫЙ КРАЙ');document.body.appendChild(panel);
  // Единые векторные пиктограммы вместо порядковых номеров.
  var navIcons={contracts:'clipboard',finance:'wallet',market:'chart',calendar:'calendar',production:'factory',helper:'person',soil:'layers',fields:'field',vehicles:'tractor',goals:'star'};
  var paths={clipboard:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4.5h6M9 10h6M9 14h6M9 18h4"/>',wallet:'<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 9h18M16 14h2"/>',chart:'<path d="M4 20V5M4 20h17M7 15l4-4 3 2 5-6"/>',calendar:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h2M14 14h2"/>',factory:'<path d="M3 20V11l6 3v-4l6 4V6h4v14zM7 17h2M12 17h2M17 17h1"/>',person:'<circle cx="12" cy="8" r="3"/><path d="M5 20c0-4 3-6 7-6s7 2 7 6"/>',layers:'<path d="M3 9l9-5 9 5-9 5zM3 13l9 5 9-5M3 17l9 5 9-5"/>',field:'<path d="M4 5l7-2 9 3v13l-9 2-7-3zM11 3v18M4 12l7-2 9 3"/>',tractor:'<circle cx="7" cy="17" r="3"/><circle cx="18" cy="18" r="2"/><path d="M10 17h6M4 14V9h5l3 5h5l2 2M6 9V5h5l2 9M3 17H2"/>',star:'<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9z"/>'};
@@ -9863,15 +9889,15 @@ window.addEventListener('keydown',function(e){
  var savePicker=document.createElement('input');savePicker.type='file';savePicker.accept='.json,application/json';savePicker.hidden=true;panel.appendChild(savePicker);
  savePicker.onchange=function(){var file=savePicker.files&&savePicker.files[0];savePicker.value='';pendingImport=null;if(!file)return;
   if(file.size>4*1024*1024){msg.textContent='Файл слишком большой: максимум 4 МБ.';draw();return;}
-  file.text().then(function(text){var item;try{item=JSON.parse(text);if(!item||typeof item!=='object'||!Array.isArray(item.cells)||!Array.isArray(item.planted)||![320,5120].includes(item.cells.length)||item.planted.length!==item.cells.length||!Number.isFinite(item.money)||!item.career||typeof item.career!=='object')throw Error('invalid');}
+  file.text().then(function(text){var item;try{item=JSON.parse(text);if(!item||typeof item!=='object'||!Array.isArray(item.cells)||!Array.isArray(item.planted)||![320,5120].includes(item.cells.length)||item.planted.length!==item.cells.length||!Number.isFinite(item.money)||!item.career||typeof item.career!=='object'||!['zarechye','berezovka'].includes(item.career.map))throw Error('invalid');}
    catch(e){msg.textContent='Это не корректный файл сохранения игры.';draw();return;}
    pendingImport=text;msg.textContent='Файл проверен. Восстановление заменит текущую карьеру; нажми «Подтвердить восстановление».';draw();
   }).catch(function(){msg.textContent='Не удалось прочитать файл.';draw();});
  };
- function exportSave(){if(!farm.save())return no('Не удалось сохранить карьеру перед экспортом.');try{var text=localStorage.getItem('put_traktorista_farm_v1');if(!text)return no('Сохранение не найдено.');var url=URL.createObjectURL(new Blob([text],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='berezovka-career.json';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},60000);return {ok:true,message:'Запрошено скачивание сохранения. Проверь загрузки браузера.'};}catch(e){return no('Не удалось экспортировать сохранение в этом браузере.');}}
+ function exportSave(){if(!farm.save())return no('Не удалось сохранить карьеру перед экспортом.');try{var text=localStorage.getItem('put_traktorista_farm_v2');if(!text)return no('Сохранение не найдено.');var url=URL.createObjectURL(new Blob([text],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='berezovka-career.json';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},60000);return {ok:true,message:'Запрошено скачивание сохранения. Проверь загрузки браузера.'};}catch(e){return no('Не удалось экспортировать сохранение в этом браузере.');}}
  function chooseImport(){savePicker.click();return {ok:true,message:'Выбери JSON-файл сохранения игры.'};}
  function cancelImport(){pendingImport=null;return {ok:true,message:'Восстановление отменено.'};}
- function confirmImport(){if(!pendingImport)return no('Сначала выбери файл сохранения.');try{farm.suspendSave(true);localStorage.setItem('put_traktorista_farm_v1',pendingImport);pendingImport=null;location.reload();return {ok:true,message:'Сохранение восстановлено. Перезагрузка…'};}catch(e){farm.suspendSave(false);return no('Не удалось записать сохранение.');}}
+ function confirmImport(){if(!pendingImport)return no('Сначала выбери файл сохранения.');try{farm.suspendSave(true);localStorage.setItem('put_traktorista_farm_v2',pendingImport);pendingImport=null;location.reload();return {ok:true,message:'Сохранение восстановлено. Перезагрузка…'};}catch(e){farm.suspendSave(false);return no('Не удалось записать сохранение.');}}
 
  function fieldSummary(st){var cells=st&&st.cells;if(!Array.isArray(cells)||!cells.length)return null;var counts=[0,0,0,0,0],crops=Array(farm.cropNames.length).fill(0),weed=0,acid=0,plow=0,fert=0,rolled=0,mulched=0;
   for(var i=0;i<cells.length;i++){var state=cells[i];if(Number.isInteger(state)&&state>=0&&state<=4)counts[state]++;if(state===2||state===3){var crop=st.crops&&st.crops[i];if(Number.isInteger(crop)&&crop>=0&&crop<crops.length)crops[crop]++;if(st.weeds&&st.weeds[i]>0)weed++;}if(st.acidity&&st.acidity[i]>0)acid++;if(st.plowCycles&&st.plowCycles[i]>=3)plow++;if(st.fertLayers&&st.fertLayers[i]>0)fert++;if(st.rolled&&st.rolled[i])rolled++;if(st.mulched&&st.mulched[i])mulched++;}
@@ -9893,7 +9919,7 @@ window.addEventListener('keydown',function(e){
    var phase=Math.floor(c.marketClock/30)%5,seconds=Math.max(1,Math.ceil(30-c.marketClock%30));
    function marketRow(site,label,crop){var now=grainPrice(site,crop),next=grainPriceAt(site,phase+1,crop),trend=next>now?'↑':next<now?'↓':'→',cl=next>now?'up':next<now?'down':'flat';return '<div class="market-price"><span>'+label+': <b>'+now+' ₽/ед.</b></span><span class="market-trend '+cl+'">далее '+trend+' '+next+' ₽</span></div>';}
    html='<div class="market-banner"><div><span class="section-kicker">ТОРГОВАЯ СВОДКА</span><h3>Цены и запасы</h3><p>Сравните две точки продажи перед поездкой.</p></div><div class="market-timer"><small>ОБНОВЛЕНИЕ ЦЕН</small><strong>'+seconds+' <em>сек</em></strong></div></div><div class="section-heading"><div><span class="section-kicker">УРОЖАЙ</span><h3>Культуры на складе</h3></div><span>Цена за единицу</span></div><div class="market-grid">';
-   farm.cropNames.forEach(function(name,i){html+='<article class="market-card"><div class="market-card-head"><strong>'+name+'</strong><span>Склад · '+Math.floor(data.grainStocks[i])+'</span></div>'+marketRow('elevator','Элеватор',i)+marketRow('store','Агромагазин',i)+'</article>';});
+   farm.cropNames.forEach(function(name,i){html+='<article class="market-card"><div class="market-card-head"><strong>'+name+'</strong><span>Склад · '+Math.floor(data.grainStocks[i])+'</span></div>'+marketRow('elevator','Элеватор',i)+marketRow('store','Агромагазин',i)+(window.__mapId==='zarechye'?marketRow('regional','Зернопункт',i):'')+'</article>';});
    html+='</div><p class="market-note">Следующая цена через '+seconds+' с работы игры. Это известный следующий шаг игрового цикла цен, а не прогноз реального рынка. В прицепе можно перевозить только одну культуру.</p><div class="section-heading"><div><span class="section-kicker">СКЛАД ХОЗЯЙСТВА</span><h3>Продукция</h3></div><span>Продажа у элеватора</span></div><div class="product-grid">';
    var labels={flour:'Мука',bread:'Хлеб',eggs:'Яйца',milk:'Молоко',cheese:'Сыр',wool:'Шерсть',cloth:'Ткань',honey:'Мёд',tomatoes:'Томаты',lettuce:'Салат',strawberries:'Клубника',oil:'Масло',straw:'Солома',energy:'Энергия'};
    Object.keys(labels).forEach(function(k){html+='<div class="product-row">'+labels[k]+': <b>'+Math.round(productPrices[k]*c.economyMultiplier)+' ₽/ед.</b> · запас '+Math.floor(c[k])+'</div>';});
@@ -10043,7 +10069,7 @@ window.addEventListener('keydown',function(e){
  var panel=document.createElement('div');panel.id='map-panel';panel.style.display='none';
  var card=document.createElement('div');card.className='map-card';
  var header=document.createElement('div');header.id='map-header';header.style.cssText='display:flex;justify-content:space-between;align-items:center;gap:10px';
- header.innerHTML='<strong>🗺 Берёзовка — карта местности</strong>';
+ header.innerHTML='<strong>🗺 '+(window.__mapId==='zarechye'?'Заречный край':'Берёзовка')+' — карта местности</strong>'; 
  var close=document.createElement('button');close.textContent='Закрыть ✕';close.style.cssText='padding:8px;border:0;border-radius:5px;cursor:pointer';header.appendChild(close);card.appendChild(header);
  var selection=document.createElement('div');selection.id='land-selection';selection.style.cssText='margin:6px 0;display:flex;gap:6px;align-items:center;justify-content:space-between;';
  var selectionText=document.createElement('span');selectionText.textContent='Нажми на поле для покупки';selection.appendChild(selectionText);
@@ -10052,7 +10078,8 @@ window.addEventListener('keydown',function(e){
  var nav=document.createElement('div');nav.id='map-navigation';nav.innerHTML='<b>Навигация</b><div class="nav-controls"><select aria-label="Точка назначения" id="nav-place"><option value="farm">Ферма</option><option value="shop">Агромагазин</option><option value="elevator">Элеватор</option><option value="gas">АЗС</option><option value="soil">Площадка грунта</option><option value="kolos">Поле Колос</option><option value="bridge">Мост</option><option value="contract">Цель контракта</option></select><button id="nav-set" type="button">Указать</button><button id="nav-field" type="button">К полю</button><button id="nav-pick" type="button">Точка на карте</button><button id="nav-clear" type="button">Снять метку</button></div><div id="nav-help">Выбери место или отметь произвольную точку. Линия прямая, не маршрут по дорогам.</div>';card.appendChild(nav);
  var guidance=document.createElement('div');guidance.id='nav-guidance';guidance.hidden=true;guidance.setAttribute('role','status');document.body.appendChild(guidance);
  var picking=false,places={farm:{x:62,z:-97,name:'Ферма'},shop:{x:-96,z:-19,name:'Агромагазин'},elevator:{x:80,z:58,name:'Элеватор'},gas:{x:-26,z:24,name:'АЗС'},soil:{x:40,z:20,name:'Грунт'},kolos:{x:24,z:92,name:'Поле Колос'},bridge:{x:9.5,z:-46,name:'Мост'}};
- function validPoint(p){return p&&Number.isFinite(p.x)&&Number.isFinite(p.z)&&Math.abs(p.x)<=286&&Math.abs(p.z)<=286&&typeof p.name==='string';}
+ if(window.__mapId==='zarechye'){places.regional={x:405,z:330,name:'Зернопункт'};places.sosnovka={x:-450,z:330,name:'Сосновка'};places.lugovoe={x:300,z:-330,name:'Луговое'};nav.querySelector('#nav-place').insertAdjacentHTML('beforeend','<option value="regional">Зернопункт</option><option value="sosnovka">Сосновка</option><option value="lugovoe">Луговое</option>');}
+ function validPoint(p){return p&&Number.isFinite(p.x)&&Number.isFinite(p.z)&&Math.abs(p.x)<=window.__mapHalf&&Math.abs(p.z)<=window.__mapHalf&&typeof p.name==='string';}
  function setWaypoint(p){if(!validPoint(p))return false;__farm.data.career.waypoint={x:p.x,z:p.z,name:p.name.slice(0,48)};picking=false;nav.querySelector('#nav-help').textContent='Метка установлена. Линия прямая, не маршрут по дорогам.';__farm.markDirty();__farm.save();draw();updateGuidance();return true;}
  function clearWaypoint(){delete __farm.data.career.waypoint;picking=false;nav.querySelector('#nav-help').textContent='Метка снята.';__farm.markDirty();__farm.save();draw();updateGuidance();}
  function contractPoint(){var c=__career.data.contract,tr=__farm.data.trailer;if(!c||!c.active)return null;
@@ -10075,7 +10102,7 @@ window.addEventListener('keydown',function(e){
  btn.onclick=function(){show(!opened)};close.onclick=function(){show(false)};panel.onclick=function(e){if(e.target===panel)show(false)};
  document.getElementById('btn-start').addEventListener('click',function(){started=true;btn.style.display='block';});
  window.addEventListener('keydown',function(e){if(e.code==='KeyM'&&!e.repeat&&started&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();show(!opened)}});
- var q=canvas.getContext('2d');function X(x){return 300+x*1.05}function Z(z){return 300-z*1.05}
+ var q=canvas.getContext('2d'),mapScale=window.__mapId==='zarechye'?.46:1.05;function X(x){return 300+x*mapScale}function Z(z){return 300-z*mapScale}
  // Один предварительно рассчитанный фон: никаких случайных кругов и мерцания при обновлении.
  var background=document.createElement('canvas');background.width=300;background.height=300;var bg=background.getContext('2d'),pixels=bg.createImageData(300,300);
  function hash(x,y){var n=Math.sin(x*127.1+y*311.7)*43758.5453;return n-Math.floor(n);}
@@ -10100,8 +10127,8 @@ window.addEventListener('keydown',function(e){
  }
  canvas.addEventListener('click',function(e){
   var r=canvas.getBoundingClientRect(),px=(e.clientX-r.left)*600/r.width,pz=(e.clientY-r.top)*600/r.height;
-  if(picking){setWaypoint({x:Math.round((px-300)/1.05),z:Math.round((300-pz)/1.05),name:'Своя метка'});return;}
-  var hit=__land.selectAt((px-300)/1.05,(300-pz)/1.05);selected=hit?hit.id:null;confirmSale=false;updateSelection();updateDetails();draw();
+  if(picking){setWaypoint({x:Math.round((px-300)/mapScale),z:Math.round((300-pz)/mapScale),name:'Своя метка'});return;}
+  var hit=__land.selectAt((px-300)/mapScale,(300-pz)/mapScale);selected=hit?hit.id:null;confirmSale=false;updateSelection();updateDetails();draw();
  });
  buy.addEventListener('click',function(){
   if(selected===null)return;
@@ -10115,16 +10142,16 @@ window.addEventListener('keydown',function(e){
   // Реальные лесополосы мира вместо абстрактных пятен на карте.
   q.lineCap='round';[[-202,-160,-190,-65],[-205,128,-183,196],[188,-148,203,-55],[80,203,170,203],[-12,-205,70,-202]].forEach(function(p){q.strokeStyle='rgba(46,80,46,.42)';q.lineWidth=12;q.beginPath();q.moveTo(X(p[0]),Z(p[1]));q.lineTo(X(p[2]),Z(p[3]));q.stroke();q.strokeStyle='rgba(72,102,55,.65)';q.lineWidth=5;q.stroke();});
   q.strokeStyle='rgba(67,80,57,.12)';q.lineWidth=1;for(var grid=37;grid<600;grid+=52.5){q.beginPath();q.moveTo(grid,0);q.lineTo(grid,600);q.moveTo(0,grid);q.lineTo(600,grid);q.stroke();}
-  function field(f,color,outline){q.save();q.translate(X(f.x),Z(f.z));q.rotate(f.angle);var w=f.w*1.05,d=f.d*1.05,taper=f.kind===2?.13:.07;
+  function field(f,color,outline){q.save();q.translate(X(f.x),Z(f.z));q.rotate(f.angle);var w=f.w*mapScale,d=f.d*mapScale,taper=f.kind===2?.13:.07;
    q.beginPath();q.moveTo(-w*(1-taper)/2,-d/2);q.lineTo(w*(1-taper)/2,-d/2);q.lineTo(w/2,d/2);q.lineTo(-w/2,d/2);q.closePath();q.fillStyle=color;q.fill();q.strokeStyle=outline||'#6f684a';q.lineWidth=outline?3:1.4;q.stroke();
    q.clip();q.strokeStyle='rgba(36,38,23,.16)';q.lineWidth=1;for(var x=-w/2;x<=w/2;x+=7){q.beginPath();q.moveTo(x,-d/2);q.lineTo(x,d/2);q.stroke();}q.restore();}
   village.decorativeFields.forEach(function(f,i){var job=__career.data.contract;field(f,__land.state(i)?'#829857':job&&job.active&&job.field===i?'#db9c50':['#beae78','#a78c64','#a5ad65'][f.kind],selected===i?'#fff2b5':null);q.font='bold 13px system-ui';q.fillStyle='#263a26';q.textAlign='center';q.fillText(String(i+2),X(f.x),Z(f.z)+4);q.textAlign='start';});field({x:24,z:92,w:46,d:64,angle:.3,kind:0},'#8e9a55');
-  q.strokeStyle='#758c94';q.lineWidth=11;q.lineCap='round';q.beginPath();for(var x=-260;x<=260;x+=4){var z=-46+Math.sin(x*.011)*7;if(x===-260)q.moveTo(X(x),Z(z));else q.lineTo(X(x),Z(z));}q.stroke();q.strokeStyle='#a6c4c3';q.lineWidth=7;q.stroke();
-  if(__career.data.apiary){q.save();q.strokeStyle='#d29c2e';q.fillStyle='rgba(224,179,57,.10)';q.lineWidth=2;q.setLineDash([5,4]);q.beginPath();q.arc(X(92),Z(-72),65*1.05,0,Math.PI*2);q.fill();q.stroke();q.restore();}
+  q.strokeStyle='#758c94';q.lineWidth=11;q.lineCap='round';q.beginPath();for(var x=-window.__mapHalf;x<=window.__mapHalf;x+=4){var z=-46+Math.sin(x*.011)*7;if(x===-window.__mapHalf)q.moveTo(X(x),Z(z));else q.lineTo(X(x),Z(z));}q.stroke();q.strokeStyle='#a6c4c3';q.lineWidth=7;q.stroke();
+  if(__career.data.apiary){q.save();q.strokeStyle='#d29c2e';q.fillStyle='rgba(224,179,57,.10)';q.lineWidth=2;q.setLineDash([5,4]);q.beginPath();q.arc(X(92),Z(-72),65*mapScale,0,Math.PI*2);q.fill();q.stroke();q.restore();}
   function road(route,width,color){q.strokeStyle=color;q.lineWidth=width;q.lineCap='round';q.lineJoin='round';q.beginPath();route.forEach(function(p,i){if(i===0)q.moveTo(X(p[0]),Z(p[1]));else q.lineTo(X(p[0]),Z(p[1]));});q.stroke();}
   village.routes.forEach(function(route,id){var main=id===0||id===1||id===3;road(route,main?9:7,'#6d695a');road(route,main?6:4,main?'#b4b0a0':'#d1bd93');});
   function label(x,z,title,kind,ox,oy){var px=X(x),pz=Z(z);q.fillStyle=kind||'#47604c';q.fillRect(px-4,pz-4,8,8);q.strokeStyle='#f6f1dd';q.lineWidth=3;q.font='bold 12px system-ui';q.strokeText(title,px+(ox||7),pz+(oy||-6));q.fillStyle='#243a2e';q.fillText(title,px+(ox||7),pz+(oy||-6));}
-  label(-78,15,'БЕРЁЗОВКА','#354b40',-39,-17);label(-26,24,'АЗС');label(-96,-19,'Магазин','#755e43',-45,18);label(-34,-34,'МТС');label(62,-97,'Ферма','#486847',8,15);if(__career.data.coop||__career.data.cowshed||__career.data.sheepfold)label(62,-72,'Загоны');if(__career.data.greenhouse)label(32,-72,'Теплица','#789053',-37,17);if(__career.data.apiary)label(92,-72,'Пасека','#ad7c25');label(24,92,'КОЛОС','#735033',-20,-10);label(40,20,'Грунт','#735033');label(80,58,'Элеватор','#755e43');label(56,-44,'Лесопилка');label(9.5,-46,'Мост','#536e72',8,15);
+  if(window.__mapId==='zarechye'){label(-450,330,'СОСНОВКА');label(300,-330,'ЛУГОВОЕ');label(405,330,'Зернопункт','#755e43');}label(-78,15,'БЕРЁЗОВКА','#354b40',-39,-17);label(-26,24,'АЗС');label(-96,-19,'Магазин','#755e43',-45,18);label(-34,-34,'МТС');label(62,-97,'Ферма','#486847',8,15);if(__career.data.coop||__career.data.cowshed||__career.data.sheepfold)label(62,-72,'Загоны');if(__career.data.greenhouse)label(32,-72,'Теплица','#789053',-37,17);if(__career.data.apiary)label(92,-72,'Пасека','#ad7c25');label(24,92,'КОЛОС','#735033',-20,-10);label(40,20,'Грунт','#735033');label(80,58,'Элеватор','#755e43');label(56,-44,'Лесопилка');label(9.5,-46,'Мост','#536e72',8,15);
   q.fillStyle='rgba(26,44,31,.72)';q.fillRect(13,13,35,41);q.fillStyle='#f6f0d7';q.textAlign='center';q.font='bold 11px system-ui';q.fillText('С',30,29);q.beginPath();q.moveTo(30,33);q.lineTo(24,46);q.lineTo(30,42);q.lineTo(36,46);q.closePath();q.fill();q.textAlign='start';
   var s=window.__tractor,px=X(s.pos.x),pz=Z(s.pos.z),wp=currentPoint();if(wp){q.save();q.strokeStyle='#c63326';q.lineWidth=2;q.setLineDash([6,5]);q.beginPath();q.moveTo(px,pz);q.lineTo(X(wp.x),Z(wp.z));q.stroke();q.setLineDash([]);q.fillStyle='#c63326';q.strokeStyle='#fff';q.lineWidth=2;q.beginPath();q.arc(X(wp.x),Z(wp.z),7,0,Math.PI*2);q.fill();q.stroke();q.restore();}q.save();q.translate(px,pz);q.rotate(-s.heading);q.fillStyle='#c94231';q.strokeStyle='#fff';q.lineWidth=2;q.beginPath();q.moveTo(0,-10);q.lineTo(-7,7);q.lineTo(7,7);q.closePath();q.fill();q.stroke();q.restore();
  }
@@ -10139,7 +10166,7 @@ window.addEventListener('keydown',function(e){
  'use strict';
  var menuQuality=document.getElementById('menu-quality'),quality=document.getElementById('set-quality');
  menuQuality.value=quality.value;
- try {if(!localStorage.getItem('put_traktorista_farm_v1')){
+ try {if(!localStorage.getItem('put_traktorista_farm_v2')){
    var label=document.querySelector('#btn-start span:nth-child(2)');label.innerHTML='Начать игру<small>Берёзовка · новая карьера</small>';
  }}catch(e){}
  var more=document.getElementById('btn-more');
@@ -10268,12 +10295,13 @@ window.addEventListener('keydown',function(e){
 /* Новая карьера создаётся до инициализации мира через обычное сохранение. */
 (function(){
  'use strict';
- var KEY='put_traktorista_farm_v1',PENDING='pt82_new_start_pending',SKEY='pt82_settings_v1';
+ var KEY='put_traktorista_farm_v2',PENDING='pt82_new_start_pending',SKEY='pt82_settings_v1';
  var home=document.getElementById('career-home'),setup=document.getElementById('career-setup'),cont=document.getElementById('btn-start');
+ var selectedMap='zarechye';document.querySelectorAll('[data-map]').forEach(function(b){b.onclick=function(){selectedMap=b.dataset.map;document.querySelectorAll('[data-map]').forEach(function(x){var active=x.dataset.map===selectedMap;x.classList.toggle('active',active);x.setAttribute('aria-pressed',String(active));});};});
  var page=1,overwriteConfirm=false,preset=document.getElementById('setup-preset'),description=document.getElementById('preset-description'),message=document.getElementById('setup-message');
  var modes={novice:{money:10000,seeds:300,fertilizer:200,loan:0,multiplier:1.2,text:'10 000 ₽, 300 семян и 200 удобрений. Цены продажи ×1,2; без кредита. Стартовая техника — МТЗ.'},manager:{money:20000,seeds:150,fertilizer:100,loan:0,multiplier:1,text:'20 000 ₽, 150 семян и 100 удобрений. Обычные цены; без кредита. Стартовая техника — МТЗ.'},scratch:{money:3000,seeds:100,fertilizer:50,loan:5000,multiplier:.8,text:'3 000 ₽, 100 семян и 50 удобрений. Цены продажи ×0,8; кредит 5 000 ₽. Стартовая техника — МТЗ.'}};
  function hasSave(){try{var s=JSON.parse(localStorage.getItem(KEY));return !!(s&&Array.isArray(s.cells)&&Array.isArray(s.planted));}catch(e){return false;}}
- cont.style.display=hasSave()?'flex':'none';
+ cont.style.display=hasSave()?'flex':'none';try{var existing=JSON.parse(localStorage.getItem(KEY));if(existing&&existing.career)cont.querySelector('small').textContent=(existing.career.map==='zarechye'?'Заречный край':'Берёзовка')+' · сохранённый прогресс';}catch(e){}
  function show(){overwriteConfirm=false;document.getElementById('setup-title').textContent=['Выбор карьеры','Выбор карты','Настройки игры'][page-1];document.getElementById('setup-step').textContent=page+' / 3';document.querySelectorAll('.setup-progress i').forEach(function(el,i){el.classList.toggle('done',i<page);});
   for(var i=1;i<=3;i++)document.getElementById('setup-page-'+i).hidden=(i!==page);
   document.getElementById('setup-next').textContent=page===3?'Начать карьеру →':'Далее →';syncPreset();message.textContent='';}
@@ -10284,7 +10312,7 @@ window.addEventListener('keydown',function(e){
   if(page<3){page++;show();return;}
   if(hasSave()&&!overwriteConfirm){overwriteConfirm=true;message.textContent='Новая карьера заменит текущее сохранение. Нажми кнопку ещё раз для подтверждения.';document.getElementById('setup-next').textContent='Подтвердить замену';return;}
   var m=modes[preset.value],N=64*80;
-  var data={implementsOwned:[true,true,true,false,false,false,false,false,false],money:m.money,grain:0,cells:Array(N).fill(0),planted:Array(N).fill(0),angles:Array(N).fill(0),tool:0,seeds:m.seeds,fertilizer:m.fertilizer,wear:0,land:{},career:{preset:preset.value,fleet:{owned:{mtz82:true},rented:{}},loan:m.loan,economyMultiplier:m.multiplier,month:8,year:1,day:1,daysPerMonth:Number(document.getElementById('setup-days').value),seasonal:document.getElementById('setup-seasonal').checked,weedsEnabled:document.getElementById('setup-weeds').checked,limeEnabled:document.getElementById('setup-lime').checked,plowingEnabled:document.getElementById('setup-plowing').checked,weatherRules:document.getElementById('setup-weather').checked,cropDamage:document.getElementById('setup-crop-damage').checked,fuelUsage:document.getElementById('setup-fuel').value,autosaveSec:Number(document.getElementById('setup-autosave').value),dayMinutes:630}};
+  var data={implementsOwned:[true,true,true,false,false,false,false,false,false],money:m.money,grain:0,cells:Array(N).fill(0),planted:Array(N).fill(0),angles:Array(N).fill(0),tool:0,seeds:m.seeds,fertilizer:m.fertilizer,wear:0,land:{},career:{map:selectedMap,preset:preset.value,fleet:{owned:{mtz82:true},rented:{}},loan:m.loan,economyMultiplier:m.multiplier,month:8,year:1,day:1,daysPerMonth:Number(document.getElementById('setup-days').value),seasonal:document.getElementById('setup-seasonal').checked,weedsEnabled:document.getElementById('setup-weeds').checked,limeEnabled:document.getElementById('setup-lime').checked,plowingEnabled:document.getElementById('setup-plowing').checked,weatherRules:document.getElementById('setup-weather').checked,cropDamage:document.getElementById('setup-crop-damage').checked,fuelUsage:document.getElementById('setup-fuel').value,autosaveSec:Number(document.getElementById('setup-autosave').value),dayMinutes:630}};
   try{
    var settings={};try{settings=JSON.parse(localStorage.getItem(SKEY))||{};}catch(e){}
    settings.daySpeed=document.getElementById('setup-speed').value;settings.quality=document.getElementById('menu-quality').value;
