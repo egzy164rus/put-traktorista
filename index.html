@@ -8,6 +8,7 @@
 <link rel="manifest" href="./manifest.webmanifest" />
 <link rel="icon" href="./icon/icon-192.png" type="image/png" />
 <link rel="apple-touch-icon" href="./icon/icon-192.png" />
+<style>#app-update-box{margin-top:10px;color:#b9cdb8;font:11px/1.3 system-ui}#app-update{background:transparent;color:#d5e8bc;border:1px solid #a4bc9480;border-radius:5px;padding:6px 9px;font:600 11px system-ui;cursor:pointer}#app-version{margin-left:8px}#app-update-status:not(:empty){margin-top:5px;color:#e1eece}@media(max-height:500px){#app-update-box{margin-top:6px}#app-update{padding:4px 7px}}</style>
 <title>Путь Тракториста — МТЗ-82 «Беларус» | Тест-драйв</title>
 <style>
 /* ===== ПУТЬ ТРАКТОРИСТА — стили (Android + Web) ===== */
@@ -1012,6 +1013,7 @@ html {-webkit-text-size-adjust:100%;text-size-adjust:100%}
         <button id="menu-new" type="button"><span>＋</span><span>Новая карьера<small>Выбрать режим и настроить игру</small></span><span class="menu-arrow">→</span></button>
         <button id="btn-start" type="button"><span>▶</span><span>Продолжить игру<small>Берёзовка · сохранённый прогресс</small></span><span class="menu-arrow">→</span></button>
       </div>
+      <div id="app-update-box"><button id="app-update" type="button">↻ Проверить обновление</button><span id="app-version">Версия 5 · Заречный край</span><div id="app-update-status" role="status"></div></div>
       <div id="career-setup" class="career-setup" hidden>
         <div class="setup-heading"><div><span class="setup-kicker">НОВАЯ КАРЬЕРА / БЕРЁЗОВКА</span><b id="setup-title">Выбор карьеры</b></div><span id="setup-step">1 / 3</span></div><div class="setup-progress" aria-hidden="true"><i></i><i></i><i></i></div>
         <div id="setup-page-1" class="setup-page">
@@ -10325,9 +10327,26 @@ window.addEventListener('keydown',function(e){
 
 </script>
 <script>
-if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
-  window.addEventListener('load', function () { navigator.serviceWorker.register('./sw.js').catch(function (error) { console.warn('Не удалось подготовить автономный режим:', error); }); });
-}
+(function(){
+ var button=document.getElementById('app-update'),status=document.getElementById('app-update-status'),registration=null;
+ var secure='serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1');
+ if(secure){
+  navigator.serviceWorker.addEventListener('controllerchange',function(){status.textContent='Доступна обновлённая версия. Нажмите «Проверить обновление».';});
+  window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(function(r){registration=r;return r.update();}).catch(function(e){console.warn('Не удалось проверить обновление:',e);});});
+  document.addEventListener('visibilitychange',function(){if(!document.hidden&&registration)registration.update().catch(function(){});});
+ }
+ button.addEventListener('click',async function(){
+  button.disabled=true;status.textContent='Проверяем подключение и обновление…';
+  try{
+   var url=new URL('./index.html',location.href);url.searchParams.set('update',Date.now().toString());
+   var response=await fetch(url.href,{cache:'no-store'});if(!response.ok)throw Error('network');
+   var content=await response.text();if(content.indexOf('Заречный край')<0)throw Error('old');
+   if(registration)await registration.update().catch(function(){});
+   status.textContent='Обновление найдено. Перезапускаем игру…';
+   location.replace(url.href);
+  }catch(e){status.textContent='Обновление недоступно. Проверьте интернет и попробуйте снова.';button.disabled=false;}
+ });
+})();
 </script>
 </body>
 </html>
