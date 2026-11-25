@@ -10544,6 +10544,19 @@ window.addEventListener('keydown',function(e){
  }
  segments.forEach(function(s){s.parts.sort(function(a,b){return a.t-b.t;});for(var i=1;i<s.parts.length;i++)connect(s.parts[i-1].id,s.parts[i].id,(s.parts[i].t-s.parts[i-1].t)*s.len);});
  function nearest(p){var best=null;segments.forEach(function(s){var v=proj(p,s);if(!best||v.d<best.d)best={seg:s,t:v.t,x:v.x,z:v.z,d:v.d};});return best;}
+ // Статические дорожные сегменты проверяются повторно только при изменении модели воды.
+ // Ограниченный LRU не даёт накапливать бесконечное число произвольных съездов.
+ var waterCache=new Map(),waterFn=Village.waterAt,waterCacheLimit=384;
+ function hasWaterBetween(a,b){
+  if(!a||!b||![a.x,a.z,b.x,b.z].every(Number.isFinite))return false;
+  if(waterFn!==Village.waterAt){waterCache.clear();waterFn=Village.waterAt;}
+  var ka=a.x+','+a.z,kb=b.x+','+b.z,key=ka<kb?ka+'|'+kb:kb+'|'+ka;
+  if(waterCache.has(key)){var cached=waterCache.get(key);waterCache.delete(key);waterCache.set(key,cached);return cached;}
+  var len=Math.hypot(b.x-a.x,b.z-a.z),steps=Math.max(1,Math.ceil(len/.75)),wet=false;
+  for(var k=0;k<=steps;k++){var t=k/steps;if(Village.waterAt(a.x+(b.x-a.x)*t,a.z+(b.z-a.z)*t)){wet=true;break;}}
+  waterCache.set(key,wet);if(waterCache.size>waterCacheLimit)waterCache.delete(waterCache.keys().next().value);
+  return wet;
+ }
  function route(start,end){
   if(!start||!end||![start.x,start.z,end.x,end.z].every(Number.isFinite))return null;
   var a=nearest(start),b=nearest(end);if(!a||!b)return null;var N=nodes.length,adj=links.map(function(x){return x.slice();});adj.push([]);adj.push([]);
@@ -10553,11 +10566,10 @@ window.addEventListener('keydown',function(e){
   for(var i=0;i<N+2;i++){var u=-1;for(var k=0;k<N+2;k++)if(!done[k]&&(u<0||dist[k]<dist[u]))u=k;if(u<0||!Number.isFinite(dist[u])||u===N+1)break;done[u]=true;adj[u].forEach(function(e){var alt=dist[u]+e.w;if(alt<dist[e.to]){dist[e.to]=alt;prev[e.to]=u;}});}
   if(!Number.isFinite(dist[N+1]))return null;
   var ids=[],cur=N+1;while(cur!==-1){ids.push(cur);if(cur===N)break;cur=prev[cur];}if(ids[ids.length-1]!==N)return null;ids.reverse();var pts=[{x:start.x,z:start.z}];ids.forEach(function(k){var p=k===N?a:k===N+1?b:nodes[k],last=pts[pts.length-1];if(Math.hypot(last.x-p.x,last.z-p.z)>.1)pts.push({x:p.x,z:p.z});});var last=pts[pts.length-1];if(Math.hypot(last.x-end.x,last.z-end.z)>.1)pts.push({x:end.x,z:end.z});var unsafeWater=Village.waterAt(start.x,start.z);
-  // Проверяем все участки, а не только съезды к первой и последней дороге.
-  for(var si=1;si<pts.length&&!unsafeWater;si++){var from=pts[si-1],to=pts[si],len=Math.hypot(to.x-from.x,to.z-from.z),steps=Math.max(1,Math.ceil(len/.75));for(var k=0;k<=steps;k++){var t=k/steps;if(Village.waterAt(from.x+(to.x-from.x)*t,from.z+(to.z-from.z)*t)){unsafeWater=true;break;}}}
+  for(var si=1;si<pts.length&&!unsafeWater;si++)unsafeWater=hasWaterBetween(pts[si-1],pts[si]);
   return {points:pts,distance:dist[N+1]+a.d+b.d,offroadStart:a.d,offroadEnd:b.d,unsafeWater:unsafeWater};
  }
- window.__roadNavigation={route:route,segments:segments.length,nodes:nodes.length};
+ window.__roadNavigation={route:route,hasWaterBetween:hasWaterBetween,segments:segments.length,nodes:nodes.length};
 })();
 
 </script>
@@ -10606,9 +10618,19 @@ window.addEventListener('keydown',function(e){
  nav.querySelector('#nav-pick').onclick=function(){picking=!picking;nav.querySelector('#nav-help').textContent=picking?'Нажми на карте, чтобы поставить метку. Покупка поля в этом режиме не выбирается.':'Выбор точки отменён.';};
  nav.querySelector('#nav-clear').onclick=clearWaypoint;
  var roadCache=null;
- function roadPath(w){if(!window.__roadNavigation||!w)return null;var p=__tractor.pos;if(!roadCache||roadCache.tx!==w.x||roadCache.tz!==w.z||Math.hypot(roadCache.x-p.x,roadCache.z-p.z)>8){roadCache={x:p.x,z:p.z,tx:w.x,tz:w.z,result:__roadNavigation.route({x:p.x,z:p.z},w)};}return roadCache.result;}
- function guidanceInfo(){var w=currentPoint();if(!w)return null;var s=window.__tractor,path=roadPath(w),aim=w;if(path){for(var i=1;i<path.points.length;i++){if(Math.hypot(path.points[i].x-s.pos.x,path.points[i].z-s.pos.z)>9){aim=path.points[i];break;}}}var dx=aim.x-s.pos.x,dz=aim.z-s.pos.z,straight=Math.hypot(w.x-s.pos.x,w.z-s.pos.z),d=path?path.distance:straight,angle=Math.atan2(dx,dz)-s.heading;angle=Math.atan2(Math.sin(angle),Math.cos(angle));var direction=straight<=12?'рядом':Math.abs(angle)<Math.PI/6?'прямо':Math.abs(angle)>5*Math.PI/6?'позади':angle>0?'слева':'справа';return {name:w.name,distance:Math.round(d),direction:direction,x:w.x,z:w.z,routed:!!path,unsafeWater:!!(path&&path.unsafeWater)};}
- function updateGuidance(){var n=guidanceInfo();guidance.hidden=!started||!n;if(n)guidance.textContent='📍 '+n.name+' · '+n.distance+' м · '+n.direction+(window.__roadNavigation?(n.routed?' · по дорогам':' · напрямую'): '')+(n.unsafeWater?' · ⚠ вода на съезде':'');}
+ function roadPath(w){
+  if(!window.__roadNavigation||!w)return null;var p=__tractor.pos;
+  if(!roadCache||roadCache.tx!==w.x||roadCache.tz!==w.z||Math.hypot(roadCache.x-p.x,roadCache.z-p.z)>8){roadCache={x:p.x,z:p.z,tx:w.x,tz:w.z,result:__roadNavigation.route({x:p.x,z:p.z},w)};}
+  var route=roadCache.result;if(!route)return null;
+  // Сохраняем графовый расчёт, но начало линии и расстояние обновляем при каждом движении.
+  var points=[{x:p.x,z:p.z}].concat(route.points.slice(1));
+  if(points.length===1&&Math.hypot(p.x-w.x,p.z-w.z)>.01)points.push({x:w.x,z:w.z});
+  var distance=0;for(var i=1;i<points.length;i++)distance+=Math.hypot(points[i].x-points[i-1].x,points[i].z-points[i-1].z);
+  var unsafe=route.unsafeWater||(points.length>1&&window.__roadNavigation.hasWaterBetween(points[0],points[1]));
+  return {points:points,distance:distance,offroadStart:route.offroadStart,offroadEnd:route.offroadEnd,unsafeWater:unsafe};
+ }
+ function guidanceInfo(){var w=currentPoint();if(!w)return null;var s=window.__tractor,path=roadPath(w),aim=w;if(path){for(var i=1;i<path.points.length;i++){if(Math.hypot(path.points[i].x-s.pos.x,path.points[i].z-s.pos.z)>9){aim=path.points[i];break;}}}var dx=aim.x-s.pos.x,dz=aim.z-s.pos.z,straight=Math.hypot(w.x-s.pos.x,w.z-s.pos.z),d=path?path.distance:straight,angle=Math.atan2(dx,dz)-s.heading;angle=Math.atan2(Math.sin(angle),Math.cos(angle));var direction=straight<=12?'рядом':Math.abs(angle)<Math.PI/6?'прямо':Math.abs(angle)>5*Math.PI/6?'позади':angle>0?'слева':'справа';return {name:w.name,distance:Math.round(d),direction:direction,x:w.x,z:w.z,routed:!!path,unsafeWater:!!(path?path.unsafeWater:(window.__roadNavigation&&window.__roadNavigation.hasWaterBetween({x:s.pos.x,z:s.pos.z},w)))};}
+ function updateGuidance(){var n=guidanceInfo();guidance.hidden=!started||!n;if(n)guidance.textContent='📍 '+n.name+' · '+n.distance+' м · '+n.direction+(window.__roadNavigation?(n.routed?' · по дорогам':' · напрямую'): '')+(n.unsafeWater?' · ⚠ вода на маршруте':'');}
  var canvas=document.createElement('canvas');canvas.width=600;canvas.height=600;canvas.style.cssText='display:block;width:100%;height:auto;background:#c7d2a2;margin:8px 0';card.insertBefore(canvas,selection);
  var info=document.createElement('div');info.id='map-legend';info.textContent='Зелёный — своё поле · охра — продажа · оранжевый — контракт. Тёмная дорога — тракт, светлая — подъезд.';card.appendChild(info);panel.appendChild(card);document.body.appendChild(panel);
  function show(on){opened=on;panel.style.display=on?'block':'none';if(!on){confirmSale=false;picking=false;updateSelection();}if(on)draw();}
